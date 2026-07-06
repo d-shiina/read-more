@@ -123,7 +123,7 @@ export default function Ae() {
                   title={c.label}
                   className={`flex cursor-pointer items-center gap-2 rounded-md border px-2 py-1.5 transition ${
                     sel
-                      ? "border-brand bg-brand/10 shadow-[0_0_10px_rgba(56,189,248,0.22)]"
+                      ? "border-brand bg-brand/10 shadow-[0_0_10px_rgba(63,214,230,0.25)]"
                       : "border-transparent hover:border-line hover:bg-white/5"
                   }`}
                 >
@@ -158,7 +158,7 @@ export default function Ae() {
                     <div className="text-xs font-bold tracking-[0.35em] text-accent2">
                       {selClip.caption.small}
                     </div>
-                    <div className="mt-3 text-3xl font-black text-white drop-shadow-[0_2px_12px_rgba(56,189,248,0.4)] sm:text-4xl">
+                    <div className="mt-3 text-3xl font-black text-white drop-shadow-[0_2px_12px_rgba(63,214,230,0.4)] sm:text-4xl">
                       {selClip.caption.big}
                     </div>
                     {selClip.caption.sub && (
@@ -237,7 +237,7 @@ export default function Ae() {
                   />
                   <button
                     onClick={submit}
-                    className="mt-2 w-full rounded-md bg-[#2a83b8] py-2.5 text-base font-bold text-white shadow-[0_0_14px_rgba(56,189,248,0.25)] transition hover:bg-[#3196cf] active:translate-y-px"
+                    className="mt-2 w-full rounded-md bg-[#1fa6bd] py-2.5 text-base font-bold text-white shadow-[0_0_14px_rgba(63,214,230,0.3)] transition hover:bg-[#29bdd4] active:translate-y-px"
                   >
                     復号する
                   </button>
