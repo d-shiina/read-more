@@ -1,0 +1,149 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 800" width="1280" height="800">
+  <defs>
+    <linearGradient id="wall" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1b1330"/>
+      <stop offset="1" stop-color="#0e0a1c"/>
+    </linearGradient>
+    <linearGradient id="floor" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0f0a1b"/>
+      <stop offset="1" stop-color="#070510"/>
+    </linearGradient>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#12224a"/>
+      <stop offset="0.6" stop-color="#25204f"/>
+      <stop offset="1" stop-color="#4a2b5e"/>
+    </linearGradient>
+    <radialGradient id="moon" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#fff6d8"/>
+      <stop offset="0.7" stop-color="#ffe9a8"/>
+      <stop offset="1" stop-color="#ffe9a8" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow" cx="50%" cy="45%" r="60%">
+      <stop offset="0" stop-color="#4be3ff" stop-opacity="0.55"/>
+      <stop offset="0.5" stop-color="#7a4bff" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="screen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0f2140"/>
+      <stop offset="1" stop-color="#132a1f"/>
+    </linearGradient>
+    <linearGradient id="rgb" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ff5d7a"/>
+      <stop offset="0.5" stop-color="#b46bff"/>
+      <stop offset="1" stop-color="#4be3ff"/>
+    </linearGradient>
+  </defs>
+
+  <!-- walls & floor -->
+  <rect width="1280" height="560" fill="url(#wall)"/>
+  <rect y="560" width="1280" height="240" fill="url(#floor)"/>
+  <rect y="552" width="1280" height="12" fill="#241938"/>
+
+  <!-- ambient monitor glow -->
+  <rect x="380" y="180" width="520" height="470" fill="url(#glow)"/>
+
+  <!-- WINDOW (left) -->
+  <g>
+    <rect x="60" y="80" width="300" height="300" rx="8" fill="#0a0714" stroke="#3a2c58" stroke-width="10"/>
+    <rect x="74" y="94" width="272" height="272" fill="url(#sky)"/>
+    <circle cx="150" cy="160" r="34" fill="url(#moon)"/>
+    <circle cx="150" cy="160" r="22" fill="#fff6d8"/>
+    <g fill="#ffffff">
+      <circle cx="230" cy="130" r="2"/><circle cx="270" cy="115" r="1.6"/>
+      <circle cx="300" cy="160" r="2.2"/><circle cx="210" cy="190" r="1.6"/>
+      <circle cx="285" cy="210" r="1.8"/><circle cx="255" cy="150" r="1.4"/>
+    </g>
+    <!-- city silhouette -->
+    <g fill="#171436" opacity="0.9">
+      <rect x="90" y="250" width="40" height="116"/>
+      <rect x="135" y="210" width="34" height="156"/>
+      <rect x="175" y="280" width="46" height="86"/>
+      <rect x="230" y="240" width="38" height="126"/>
+      <rect x="275" y="290" width="52" height="76"/>
+    </g>
+    <g fill="#ffd27a" opacity="0.85">
+      <rect x="145" y="230" width="6" height="8"/><rect x="156" y="250" width="6" height="8"/>
+      <rect x="240" y="260" width="6" height="8"/><rect x="285" y="305" width="6" height="8"/>
+    </g>
+    <line x1="210" y1="94" x2="210" y2="366" stroke="#0a0714" stroke-width="8"/>
+    <line x1="74" y1="230" x2="346" y2="230" stroke="#0a0714" stroke-width="8"/>
+    <!-- curtain -->
+    <rect x="46" y="70" width="40" height="320" fill="#3a2350"/>
+    <rect x="334" y="70" width="40" height="320" fill="#331f47"/>
+  </g>
+
+  <!-- POSTER (right wall) -->
+  <g>
+    <rect x="980" y="70" width="200" height="260" fill="#221340" stroke="#4a3570" stroke-width="4"/>
+    <text x="1080" y="170" text-anchor="middle" fill="#b46bff" font-size="52" font-weight="800" font-family="sans-serif">革命</text>
+    <text x="1080" y="205" text-anchor="middle" fill="#4be3ff" font-size="15" letter-spacing="3" font-family="sans-serif">REVOLUTION</text>
+    <circle cx="1080" cy="260" r="26" fill="#ffd166" opacity="0.85"/>
+    <rect x="1055" y="284" width="50" height="34" rx="6" fill="#b46bff" opacity="0.85"/>
+  </g>
+
+  <!-- LED strip glow behind desk -->
+  <rect x="360" y="300" width="560" height="18" rx="9" fill="url(#rgb)" opacity="0.55"/>
+
+  <!-- DESK -->
+  <rect x="330" y="470" width="620" height="90" fill="#2a1d14" stroke="#3f2c1f" stroke-width="4"/>
+  <rect x="360" y="560" width="560" height="12" fill="#1c130d"/>
+
+  <!-- gaming chair back -->
+  <rect x="560" y="470" width="160" height="120" rx="30" fill="#171225"/>
+  <rect x="580" y="470" width="120" height="120" rx="24" fill="#221a34"/>
+
+  <!-- MONITOR (center) -->
+  <g>
+    <rect x="500" y="290" width="280" height="180" rx="10" fill="#0a0714" stroke="#3a2c58" stroke-width="8"/>
+    <rect x="514" y="304" width="252" height="152" fill="url(#screen)"/>
+    <!-- fake chat/game UI -->
+    <rect x="524" y="314" width="232" height="24" rx="4" fill="#0e1830"/>
+    <text x="534" y="331" fill="#4be3ff" font-size="13" font-family="sans-serif">革命 -REVOLUTION- ｜ online</text>
+    <g font-family="sans-serif" font-size="11" fill="#cfc6ea">
+      <rect x="524" y="346" width="150" height="16" rx="4" fill="#1b2540"/>
+      <text x="532" y="358">こな: おかえり！</text>
+      <rect x="524" y="368" width="180" height="16" rx="4" fill="#1b2540"/>
+      <text x="532" y="380">こな: なぞなぞ出していい？</text>
+      <rect x="606" y="390" width="150" height="16" rx="4" fill="#2a2050"/>
+    </g>
+    <rect x="524" y="430" width="232" height="18" rx="6" fill="#0e1830" stroke="#35507f" stroke-width="1"/>
+    <text x="532" y="443" fill="#6d84b5" font-size="11" font-family="sans-serif">メッセージを入力…</text>
+    <!-- stand -->
+    <rect x="628" y="470" width="24" height="18" fill="#1c130d"/>
+    <rect x="600" y="486" width="80" height="10" rx="4" fill="#140d09"/>
+  </g>
+
+  <!-- keyboard + mouse -->
+  <rect x="470" y="500" width="200" height="34" rx="6" fill="#181226" stroke="#33264d" stroke-width="2"/>
+  <rect x="690" y="506" width="40" height="24" rx="10" fill="#181226" stroke="#33264d" stroke-width="2"/>
+
+  <!-- DESK DRAWER (right side, holds USB) -->
+  <g>
+    <rect x="820" y="474" width="120" height="84" rx="4" fill="#241a12" stroke="#3f2c1f" stroke-width="3"/>
+    <circle cx="880" cy="516" r="6" fill="#0a0714" stroke="#5a4530" stroke-width="2"/>
+  </g>
+
+  <!-- BED (bottom-left) -->
+  <g>
+    <rect x="40" y="600" width="300" height="150" rx="12" fill="#2a1d33" stroke="#3a2a4e" stroke-width="4"/>
+    <rect x="40" y="576" width="300" height="44" rx="12" fill="#3a2846"/>
+    <rect x="58" y="566" width="96" height="48" rx="12" fill="#cabfe6"/>
+    <path d="M170 616 q70 -28 170 2 v120 h-170 z" fill="#4a2f5e"/>
+  </g>
+
+  <!-- DOOR (right) -->
+  <g>
+    <rect x="1050" y="360" width="170" height="360" rx="6" fill="#1c1526" stroke="#2f2440" stroke-width="6"/>
+    <rect x="1068" y="382" width="134" height="140" fill="#241a30"/>
+    <rect x="1068" y="536" width="134" height="150" fill="#241a30"/>
+    <circle cx="1070" cy="540" r="9" fill="#5a4585"/>
+  </g>
+
+  <!-- floor clutter -->
+  <g opacity="0.9">
+    <rect x="410" y="640" width="20" height="44" rx="4" fill="#ff5d7a" transform="rotate(-16 420 662)"/>
+    <rect x="470" y="660" width="20" height="44" rx="4" fill="#4be3ff" transform="rotate(10 480 682)"/>
+    <rect x="900" y="650" width="20" height="44" rx="4" fill="#7fef9d" transform="rotate(-8 910 672)"/>
+    <rect x="820" y="690" width="60" height="40" rx="6" fill="#e7d9b0"/>
+  </g>
+</svg>

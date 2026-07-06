@@ -1,43 +1,48 @@
 # read more
 
-「続きは、続きを読むからどうぞ！」——**ブラウザそのものを謎の盤面に使う**、身内向けのWeb謎解きゲーム（最小版／POC）。
+ネトゲに溺れた夜と、こなちゃんと、フラグムービーへの憧れ——身内向けの、画像つきブラウザ謎解きゲーム。
 
-友人（zaftx）の“黒歴史ブログ”をモチーフに、本物のブログ／ドキュメントサイトそっくりのUIで記事を読み進め、
-「呪文（こたえ）」を解いて次の“続き”を開いていく。Unityでは出せない、**Webでやる意味のある**謎解きを目指す。
+参考：[gakuyume.kirizou.site/nazo_main](https://gakuyume.kirizou.site/nazo_main) のような
+**左サイドバーで場所移動＋アイテム、右にシーン**の構成。
 
-> タイトル `read more` は、彼のブログに毎回ある「続きは続きを読むからどうぞ！」という定型文が由来。
-> 「革命」（＝AfterEffectsを知って叫んだ一言）は、ゲーム中盤〜終盤のキメに温存。
+## いま遊べるもの（縦スライス：1場所）
 
-## いま動くもの（最小版の1サイクル）
-
-1. **第1話**（`/`）を読む → 謎（呪文）が出る
-2. こたえを入力（または**アドレスバーに `/こたえ`**）→ 正解なら**隠しページ**（第2話）が開く
-3. 外れた呪文は、世界観に合わせた**専用404**へ落ちる
-4. 第2話の答えは本文になく、**HTMLソースの中**に隠してある（「ページのソースを表示」で見つける）
-5. 進行は **localStorage** に保存（リロードしても残る）
-6. 本来TOCがあった**右カラムは、黒歴史ブログ風サイドバー**に再利用（プロフィール／アクセスカウンター／解いた話）
-
-＝ **URL入力・専用404・ソース読み・ブラウザ状態保持** という“ブラウザである意味”を1周で体験できる。
-
-## 使っているブラウザ機能（＝この企画の肝）
-
-| 仕掛け | 実装 |
-|---|---|
-| URLが答え | 動的ルート `src/app/[answer]/page.tsx` でサーバー側判定。正解のみ表示、他は `notFound()` |
-| 専用404 | `src/app/not-found.tsx` |
-| ソース読み | 第2話に本物のHTMLコメント＋視覚的に隠した手がかりを埋め込み |
-| 状態保持 | `localStorage`（`src/components/Cleared.tsx` / `SidePanel.tsx`） |
+- タイトル →「はじめる」
+- **左サイドバー**：MAP（深夜の自室／🔒未開放）・ITEMS（持ち物）・進行度
+- **右のシーン**：背景画像の上のホットスポットをクリックして調べる
+- **会話**：こなちゃんがADV風ウィンドウ（立ち絵＋タイプライター）で話す
+- **アイテム**：引き出しからUSBを入手 → 持ち物に追加、クリックで拡大説明
+- **画像パズル**：モニターから「こなちゃんの謎」を開き、答えを入力 → 正解でクリア
+- 進行は `localStorage` に保存、view-source に隠しヒント（ブラウザである意味の名残）
 
 ## 技術構成
 
-- **Next.js 16**（App Router）+ **React 19** + **TypeScript**
-- **Fumadocs UI**（`fumadocs-ui` / `fumadocs-core`）で見た目を構築。**MDXは使っていない**（ページは全部React/TSX、サイドバーの章立ては手動 `tree`）
-- **Tailwind CSS v4**（Fumadocsのプリセット `neutral.css` + `preset.css` を利用）
+- **Next.js 16**（App Router）+ **React 19** + **TypeScript** + **Tailwind CSS v4**
+- **shadcn/ui**（Button / Input / Dialog / Card）＝ ダイアログ・入力・ボタン
+- 状態管理：`useReducer` + Context（`src/game/store.tsx`）
+- 画像は差し替え可能な構造（いまは仮の SVG プレースホルダ）
 
-## 差し替えポイント（実在ネタはここに入れる）
+## ディレクトリ
 
-謎の答えは `src/game/config.ts` の `ANSWERS` に集約。コードを触らず答えを変えられる。
-POCでは仮の答え（`aftereffects`）が入っている。本番は友人のハンドル・こなちゃん関連の言葉・思い出の日付などに差し替える想定。
+```
+src/game/
+  Game.tsx        画面遷移（タイトル/本編/クリア）＋レイアウト
+  store.tsx       ゲーム状態（インベントリ・フラグ・会話・パズル）
+  types.ts / items.ts / assets.ts / config.ts
+  ui/
+    Sidebar.tsx   左：場所移動＋アイテム
+    Scene.tsx     右：背景画像＋ホットスポット
+    DialogueBox.tsx  ADV風会話ウィンドウ
+    PuzzleModal.tsx  画像パズル（shadcn Dialog）
+    Inventory.tsx / Title.tsx / Clear.tsx / Hotspot.tsx
+public/images/     背景・キャラ・アイテム・パズルの画像
+```
+
+## 画像・謎の差し替え
+
+- 画像：`ASSETS.md` の手順で、`public/images/...` を本物の絵に置き換え（`src/game/assets.ts` のパス変更）
+- 謎の答え：`src/game/config.ts` の `ANSWERS`（いまは仮で `aftereffects`）
+- 会話文：各シーン（`Scene.tsx`）とパズル（`PuzzleModal.tsx`）内
 
 ## 開発
 
@@ -45,12 +50,9 @@ POCでは仮の答え（`aftereffects`）が入っている。本番は友人の
 npm install
 npm run dev      # http://localhost:3000
 npm run build
-npm start
 ```
 
-## この先の予定
+## この先
 
-- 本物のブログ（`blog.livedoor.jp/zaftx/`）へ飛ばして特定記事から答えを拾わせる連携
-- 右サイドバーの**カレンダー＝日付メタ謎**、**アクセスカウンター＝キリ番謎**
-- **こなちゃんの最新コメント**で物語を進行
-- 終盤に「革命／AfterEffects」のキメ → こなちゃんと当時の夢へのエンディング
+- 場所の追加（黒歴史ブログ連携／思い出の日付の謎／こなちゃんのコメント進行）
+- 「革命＝AfterEffects」のキメと、こなちゃん・当時の夢へのエンディング
