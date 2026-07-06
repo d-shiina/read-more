@@ -208,3 +208,59 @@ body {
     @apply font-sans;
   }
 }
+/* ===== CRT / terminal aesthetic ===== */
+:root {
+  --term: #46f08a;
+  --term-dim: #1f7a49;
+  --term-amber: #ffcf5a;
+  --term-cyan: #46e0ff;
+  --term-magenta: #ff6bd6;
+  --font-term: ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas,
+    "DejaVu Sans Mono", "Liberation Mono", monospace;
+}
+
+.crt {
+  position: relative;
+  background: #030805;
+  color: var(--term);
+  font-family: var(--font-term);
+  text-shadow: 0 0 6px rgba(70, 240, 138, 0.45);
+  animation: crtFlicker 4s infinite steps(60);
+}
+/* scanlines */
+.crt::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 60;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.28) 0px,
+    rgba(0, 0, 0, 0.28) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+/* vignette + glow */
+.crt::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 61;
+  box-shadow: inset 0 0 180px rgba(0, 0, 0, 0.95);
+  background: radial-gradient(120% 100% at 50% 40%, transparent 55%, rgba(0, 20, 8, 0.5) 100%);
+}
+@keyframes crtFlicker {
+  0%, 100% { opacity: 1; }
+  47% { opacity: 0.98; }
+  50% { opacity: 0.92; }
+  53% { opacity: 0.99; }
+  92% { opacity: 0.9; }
+}
+.term-dim { color: var(--term-dim); text-shadow: none; }
+.term-amber { color: var(--term-amber); text-shadow: 0 0 6px rgba(255, 207, 90, 0.4); }
+.term-cyan { color: var(--term-cyan); text-shadow: 0 0 6px rgba(70, 224, 255, 0.4); }
+.term-magenta { color: var(--term-magenta); text-shadow: 0 0 6px rgba(255, 107, 214, 0.4); }
+.cursor-blink { animation: blink 1s steps(2, start) infinite; }
