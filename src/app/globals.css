@@ -5,18 +5,18 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --bg: #0a0710;
-  --frame: #14101f;
-  --panel: #1a1428;
-  --panel-2: #221a34;
-  --line: #35294f;
-  --text: #ece7fa;
+  --bg: #0f1115;
+  --frame: #171a20;
+  --panel: #1c2027;
+  --panel-2: #232833;
+  --line: #2c323d;
+  --text: #dde2ea;
   --muted: oklch(0.97 0 0);
   --accent: oklch(0.97 0 0);
-  --accent-2: #4be3ff;
-  --brand: #b46bff;
-  --gold: #ffd166;
-  --danger: #ff5d7a;
+  --accent-2: #5ad1e6;
+  --brand: #38bdf8;
+  --gold: #cCA35a;
+  --danger: #e0574a;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);

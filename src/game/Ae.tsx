@@ -84,14 +84,14 @@ export default function Ae() {
       ? "そう、その最初のログは“読める”。連絡先IDを覚えて、革命の日 2011-07-12 に戻って！"
       : "革命の日(2011-07-12)は暗号化されてる。鍵は、いちばん最初のログ(2011-04-16)で彼が晒した“連絡先ID”だよ。";
 
-  const panel = "rounded-2xl border-2 border-line bg-panel/80 shadow-[0_6px_0_rgba(0,0,0,0.4)]";
-  const chip = "rounded-full px-3 py-1 text-xs font-black tracking-wider";
+  const panel = "rounded-lg border border-line bg-panel/80 shadow-[0_2px_10px_rgba(0,0,0,0.4)]";
+  const chip = "rounded-md px-2.5 py-1 text-xs font-bold tracking-wider";
 
   return (
     <div className="flex h-[100dvh] w-full flex-col gap-2 overflow-hidden bg-[#0d0a16] p-2 text-text sm:p-3">
       {/* ===== メニューバー（チャンキー） ===== */}
       <div className={`${panel} flex items-center gap-3 px-3 py-2`}>
-        <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#7a4bff] to-[#b46bff] text-lg font-black text-white shadow-[0_0_16px_rgba(180,107,255,0.6)]">
+        <span className="flex size-9 items-center justify-center rounded-md bg-[#2b3550] text-lg font-black text-[#9fb6e6] ring-1 ring-[#3a4560]">
           Ae
         </span>
         <span className="text-base font-black text-brand">revolution<span className="text-muted-foreground">.aep</span></span>
@@ -121,9 +121,9 @@ export default function Ae() {
                   key={c.id}
                   onClick={() => selectClip(c.id)}
                   title={c.label}
-                  className={`flex cursor-pointer items-center gap-2 rounded-xl border-2 px-2 py-1.5 transition ${
+                  className={`flex cursor-pointer items-center gap-2 rounded-md border px-2 py-1.5 transition ${
                     sel
-                      ? "border-brand bg-brand/15 shadow-[0_0_12px_rgba(180,107,255,0.4)]"
+                      ? "border-brand bg-brand/10 shadow-[0_0_10px_rgba(56,189,248,0.22)]"
                       : "border-transparent hover:border-line hover:bg-white/5"
                   }`}
                 >
@@ -146,10 +146,10 @@ export default function Ae() {
             </span>
           </div>
           <div className="flex min-h-0 flex-1 items-center justify-center p-3">
-            <div className="relative aspect-video w-full max-w-[560px] overflow-hidden rounded-xl border-4 border-black bg-black shadow-[0_10px_30px_rgba(0,0,0,0.6)]">
+            <div className="relative aspect-video w-full max-w-[560px] overflow-hidden rounded-md border-2 border-black bg-black shadow-[0_10px_30px_rgba(0,0,0,0.6)]">
               <div
                 className="absolute inset-0"
-                style={{ background: "radial-gradient(120% 90% at 50% 28%, rgba(120,70,190,0.5), rgba(0,0,0,0.94))" }}
+                style={{ background: "radial-gradient(120% 90% at 50% 28%, rgba(56,110,150,0.42), rgba(0,0,0,0.94))" }}
               />
               <div className="absolute inset-5 rounded-lg border border-white/10" />
               <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
@@ -158,11 +158,11 @@ export default function Ae() {
                     <div className="text-xs font-bold tracking-[0.35em] text-accent2">
                       {selClip.caption.small}
                     </div>
-                    <div className="mt-3 text-3xl font-black text-white drop-shadow-[0_2px_12px_rgba(180,107,255,0.6)] sm:text-4xl">
+                    <div className="mt-3 text-3xl font-black text-white drop-shadow-[0_2px_12px_rgba(56,189,248,0.4)] sm:text-4xl">
                       {selClip.caption.big}
                     </div>
                     {selClip.caption.sub && (
-                      <div className="mt-3 text-sm text-[#cbb6ef]">{selClip.caption.sub}</div>
+                      <div className="mt-3 text-sm text-[#a9c4dd]">{selClip.caption.sub}</div>
                     )}
                     {selClip.caption.lines && (
                       <div className="mt-4 space-y-1.5 text-[15px] text-white/90">
@@ -186,7 +186,7 @@ export default function Ae() {
                     <div className="mt-3 select-none font-mono text-sm text-white/25">
                       ▓▓▒▓░▒▓▓░▓▒▓░▒▓▓▒░▓▓
                     </div>
-                    <div className="mt-4 rounded-full bg-brand/20 px-4 py-1.5 text-sm font-bold text-brand">
+                    <div className="mt-4 rounded-md bg-brand/15 px-4 py-1.5 text-sm font-bold text-brand">
                       → 右の DECRYPT で復号せよ
                     </div>
                   </div>
@@ -209,12 +209,12 @@ export default function Ae() {
             <PropRow label="不透明度" value="100%" />
             <PropRow label="位置" value="960, 540" />
 
-            <div className="rounded-2xl border-2 border-gold/40 bg-black/30 p-3">
-              <div className="mb-2 flex items-center gap-2 text-sm font-black text-gold">
+            <div className="rounded-md border border-gold/30 bg-black/25 p-3">
+              <div className="mb-2 flex items-center gap-2 text-sm font-bold text-gold">
                 <span>🔓</span> DECRYPT / 復号
               </div>
               {clearedCh1 && selId === CHAPTER1_TARGET ? (
-                <div className="rounded-xl bg-[#1a3a24] px-3 py-2 text-center text-sm font-black text-[#46f08a]">
+                <div className="rounded-md bg-[#16301f] px-3 py-2 text-center text-sm font-bold text-[#5fd39a]">
                   ✓ 復号済み
                 </div>
               ) : target ? (
@@ -229,7 +229,7 @@ export default function Ae() {
                     placeholder="パスフレーズ"
                     autoComplete="off"
                     spellCheck={false}
-                    className="w-full rounded-xl border-2 bg-black/50 px-3 py-2.5 font-mono text-base font-bold text-text outline-none"
+                    className="w-full rounded-md border bg-black/50 px-3 py-2.5 font-mono text-base font-bold text-text outline-none"
                     style={{
                       borderColor: wrong ? "var(--danger)" : "var(--line)",
                       animation: wrong ? "shake 0.4s" : undefined,
@@ -237,7 +237,7 @@ export default function Ae() {
                   />
                   <button
                     onClick={submit}
-                    className="mt-2 w-full rounded-xl bg-gradient-to-b from-[#c98bff] to-[#8a4bff] py-2.5 text-base font-black text-white shadow-[0_4px_0_#5a2fb0] transition active:translate-y-0.5 active:shadow-[0_1px_0_#5a2fb0]"
+                    className="mt-2 w-full rounded-md bg-[#2a83b8] py-2.5 text-base font-bold text-white shadow-[0_0_14px_rgba(56,189,248,0.25)] transition hover:bg-[#3196cf] active:translate-y-px"
                   >
                     復号する
                   </button>
@@ -261,11 +261,11 @@ export default function Ae() {
 
       {/* ===== こな（大きめ吹き出し） ===== */}
       <div className={`${panel} flex items-center gap-3 px-3 py-2`}>
-        <span className="relative size-11 shrink-0 overflow-hidden rounded-full ring-2 ring-[#ff6bd6]">
+        <span className="relative size-11 shrink-0 overflow-hidden rounded-full ring-2 ring-[#cf8fb0]">
           <Image src="/images/chars/kona.svg" alt="こな" fill className="object-cover" />
         </span>
         <div className="min-w-0">
-          <div className="text-xs font-black text-[#ff6bd6]">こな</div>
+          <div className="text-xs font-bold text-[#cf8fb0]">こな</div>
           <div className="truncate text-sm text-text">{konaLine}</div>
         </div>
       </div>
@@ -342,8 +342,8 @@ export default function Ae() {
 
             {/* プレイヘッド（ノブつき） */}
             <div className="pointer-events-none absolute top-0 z-10 h-full" style={{ left: `${head}%` }}>
-              <div className="mx-auto h-full w-0.5 bg-accent2 shadow-[0_0_10px_rgba(70,224,255,0.9)]" />
-              <div className="absolute top-0 left-1/2 size-3 -translate-x-1/2 -translate-y-0 rounded-b-sm bg-accent2 shadow-[0_0_10px_rgba(70,224,255,0.9)]" />
+              <div className="mx-auto h-full w-0.5 bg-accent2 shadow-[0_0_8px_rgba(90,209,230,0.5)]" />
+              <div className="absolute top-0 left-1/2 size-3 -translate-x-1/2 -translate-y-0 rounded-b-sm bg-accent2 shadow-[0_0_8px_rgba(90,209,230,0.5)]" />
             </div>
           </div>
         </div>

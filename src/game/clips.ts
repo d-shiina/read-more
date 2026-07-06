@@ -132,10 +132,10 @@ export const CLIPS: Record<string, Clip> = {
 };
 
 export const LAYERS: Layer[] = [
-  { name: "革命 / 編集", color: "#b46bff", clipIds: ["kakumei", "newpc"] },
-  { name: "こな", color: "#ff6bd6", clipIds: ["konaComment", "offkai", "shibaku"] },
-  { name: "AVA / FPS", color: "#46e0ff", clipIds: ["first", "fe", "css", "forgotten"] },
-  { name: "フラグムービー", color: "#ffcf5a", clipIds: ["fragStart", "fragEnd"] },
+  { name: "革命 / 編集", color: "#8a8fd6", clipIds: ["kakumei", "newpc"] },
+  { name: "こな", color: "#cf8fb0", clipIds: ["konaComment", "offkai", "shibaku"] },
+  { name: "AVA / FPS", color: "#5ab6d6", clipIds: ["first", "fe", "css", "forgotten"] },
+  { name: "フラグムービー", color: "#c9a24a", clipIds: ["fragStart", "fragEnd"] },
 ];
 
 /** この章で復号を狙うクリップ */
