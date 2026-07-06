@@ -30,8 +30,8 @@ export default function PuzzleModal() {
         type: "SOLVE_FRAG",
         lines: [
           { speaker: "こな", portrait: ASSETS.chars.kona, text: "……正解。ふふ、覚えててくれたんだ。" },
-          { speaker: "こな", portrait: ASSETS.chars.kona, text: "あの頃のキミ、『これは革命だ』って本気で叫んでたよね。" },
-          { speaker: "こな", portrait: ASSETS.chars.kona, text: "その気持ち、まだ残ってる？ ……続きは、また今度ね。" },
+          { speaker: "こな", portrait: ASSETS.chars.kona, text: "Jokaさんのフラグムービーに憧れて、これ知った日。『自分の中で革命が起こった』って書いてたよね。" },
+          { speaker: "こな", portrait: ASSETS.chars.kona, text: "あの頃の“作ってみたい”って気持ち、まだ残ってる？ ……続きは、また今度ね。" },
         ],
       });
       setValue("");
