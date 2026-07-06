@@ -4,104 +4,39 @@ import {
   createContext,
   useContext,
   useReducer,
-  useCallback,
+  useEffect,
   ReactNode,
 } from "react";
-import { FlagId, GameState, ItemId, Line, SceneId } from "./types";
 
-const initialFlags: Record<FlagId, boolean> = {
-  talkedKona: false,
-  gotUsb: false,
-  gotDisc: false,
-  posterSeen: false,
-  windowSeen: false,
-  solvedFrag: false,
-};
+type Screen = "title" | "game";
 
-export const initialState: GameState & { endAfterDialogue: boolean } = {
-  screen: "title",
-  scene: "room",
-  inventory: [],
-  flags: { ...initialFlags },
-  dialogue: [],
-  dialogueIndex: 0,
-  puzzle: null,
-  selectedItem: null,
-  startedAt: null,
-  finishedAt: null,
-  endAfterDialogue: false,
-};
+interface State {
+  screen: Screen;
+  solved: string[]; // 解いた記事ID
+  hydrated: boolean; // localStorageから復元済み
+}
 
-type State = typeof initialState;
+const initial: State = { screen: "title", solved: [], hydrated: false };
+
+const STORAGE_KEY = "readmore.solved";
 
 type Action =
   | { type: "START" }
-  | { type: "RESET" }
-  | { type: "GOTO"; scene: SceneId }
-  | { type: "SAY"; lines: Line[]; endAfter?: boolean }
-  | { type: "ADVANCE" }
-  | { type: "SET_FLAG"; flag: FlagId; value?: boolean }
-  | { type: "ADD_ITEM"; item: ItemId }
-  | { type: "SELECT_ITEM"; item: ItemId | null }
-  | { type: "OPEN_PUZZLE"; puzzle: "frag" }
-  | { type: "CLOSE_PUZZLE" }
-  | { type: "SOLVE_FRAG"; lines: Line[] }
-  | { type: "CLEAR" };
+  | { type: "HYDRATE"; solved: string[] }
+  | { type: "SOLVE"; id: string }
+  | { type: "RESET" };
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
     case "START":
-      return {
-        ...state,
-        screen: "game",
-        startedAt: Date.now(),
-      };
+      return { ...state, screen: "game" };
+    case "HYDRATE":
+      return { ...state, solved: action.solved, hydrated: true };
+    case "SOLVE":
+      if (state.solved.includes(action.id)) return state;
+      return { ...state, solved: [...state.solved, action.id] };
     case "RESET":
-      return { ...initialState, flags: { ...initialFlags } };
-    case "GOTO":
-      return { ...state, scene: action.scene };
-    case "SAY":
-      return {
-        ...state,
-        dialogue: action.lines,
-        dialogueIndex: 0,
-        endAfterDialogue: action.endAfter ?? false,
-      };
-    case "ADVANCE": {
-      if (state.dialogueIndex < state.dialogue.length - 1) {
-        return { ...state, dialogueIndex: state.dialogueIndex + 1 };
-      }
-      // 会話終了
-      if (state.endAfterDialogue) {
-        return { ...state, dialogue: [], dialogueIndex: 0, screen: "clear", finishedAt: Date.now(), endAfterDialogue: false };
-      }
-      return { ...state, dialogue: [], dialogueIndex: 0 };
-    }
-    case "SET_FLAG":
-      return { ...state, flags: { ...state.flags, [action.flag]: action.value ?? true } };
-    case "ADD_ITEM":
-      if (state.inventory.includes(action.item)) return state;
-      return { ...state, inventory: [...state.inventory, action.item] };
-    case "SELECT_ITEM":
-      return {
-        ...state,
-        selectedItem: state.selectedItem === action.item ? null : action.item,
-      };
-    case "OPEN_PUZZLE":
-      return { ...state, puzzle: action.puzzle };
-    case "CLOSE_PUZZLE":
-      return { ...state, puzzle: null };
-    case "SOLVE_FRAG":
-      return {
-        ...state,
-        puzzle: null,
-        flags: { ...state.flags, solvedFrag: true },
-        dialogue: action.lines,
-        dialogueIndex: 0,
-        endAfterDialogue: true,
-      };
-    case "CLEAR":
-      return { ...state, screen: "clear", finishedAt: Date.now() };
+      return { screen: "game", solved: [], hydrated: true };
     default:
       return state;
   }
@@ -110,34 +45,36 @@ function reducer(state: State, action: Action): State {
 interface Api {
   state: State;
   dispatch: React.Dispatch<Action>;
-  say: (lines: Line[], endAfter?: boolean) => void;
-  setFlag: (flag: FlagId, value?: boolean) => void;
-  addItem: (item: ItemId) => void;
-  has: (item: ItemId) => boolean;
-  flag: (f: FlagId) => boolean;
+  isSolved: (id: string) => boolean;
 }
 
 const Ctx = createContext<Api | null>(null);
 
 export function GameProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [state, dispatch] = useReducer(reducer, initial);
 
-  const say = useCallback(
-    (lines: Line[], endAfter?: boolean) => dispatch({ type: "SAY", lines, endAfter }),
-    [],
-  );
-  const setFlag = useCallback(
-    (flag: FlagId, value?: boolean) => dispatch({ type: "SET_FLAG", flag, value }),
-    [],
-  );
-  const addItem = useCallback((item: ItemId) => dispatch({ type: "ADD_ITEM", item }), []);
-  const has = useCallback((item: ItemId) => state.inventory.includes(item), [state.inventory]);
-  const flag = useCallback((f: FlagId) => state.flags[f], [state.flags]);
+  // 進行を localStorage から復元（ブラウザに保存＝ブラウザである意味）
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      dispatch({ type: "HYDRATE", solved: raw ? JSON.parse(raw) : [] });
+    } catch {
+      dispatch({ type: "HYDRATE", solved: [] });
+    }
+  }, []);
+
+  // 変化があれば保存
+  useEffect(() => {
+    if (!state.hydrated) return;
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.solved));
+    } catch {}
+  }, [state.solved, state.hydrated]);
+
+  const isSolved = (id: string) => state.solved.includes(id);
 
   return (
-    <Ctx.Provider value={{ state, dispatch, say, setFlag, addItem, has, flag }}>
-      {children}
-    </Ctx.Provider>
+    <Ctx.Provider value={{ state, dispatch, isSolved }}>{children}</Ctx.Provider>
   );
 }
 
