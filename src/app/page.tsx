@@ -1,5 +1,5 @@
-import Ae from "@/game/Ae";
+import BakaGame from "@/game/BakaGame";
 
 export default function Home() {
-  return <Ae />;
+  return <BakaGame />;
 }
