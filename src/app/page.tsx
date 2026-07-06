@@ -1,6 +1,6 @@
-import Terminal from "@/game/Terminal";
+import AeMock from "@/game/AeMock";
 
-// ★ UIモック：ターミナル/ハッキング風の“見た目”確認用。ゲームロジックは未実装。
+// ★ UIモック：After Effects 風の“見た目”確認用。タイムライン＋謎解きの器。ロジックは未実装。
 export default function Home() {
-  return <Terminal />;
+  return <AeMock />;
 }
