@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import { CLIPS, LAYERS, CHAPTER1_TARGET, Clip } from "./clips";
 import { matches } from "./config";
 
@@ -11,7 +12,7 @@ const dateFromPct = (p: number) => new Date(T0 + (p / 100) * (T1 - T0));
 const fmtTC = (d: Date) =>
   `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
 
-const MENUS = ["ファイル", "編集", "コンポジション", "レイヤー", "エフェクト", "アニメーション", "ヘルプ"];
+const MENUS = ["ファイル", "コンポジション", "エフェクト", "ヘルプ"];
 const STORAGE = "readmore.ae.decrypted";
 
 export default function Ae() {
@@ -22,7 +23,6 @@ export default function Ae() {
   const [wrong, setWrong] = useState(false);
   const [hydrated, setHydrated] = useState(false);
 
-  // localStorage 復元／保存（初回マウント時の外部ストア同期）
   /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     try {
@@ -44,11 +44,8 @@ export default function Ae() {
 
   const selClip = CLIPS[selId];
   const headDate = useMemo(() => dateFromPct(head), [head]);
-
-  // Decrypt の対象＝選択中のロッククリップ（鍵あり・未復号）
   const target =
     selClip && selClip.locked && !isDecrypted(selClip.id) && selClip.key ? selClip : null;
-
   const clearedCh1 = isDecrypted(CHAPTER1_TARGET);
 
   const selectClip = (id: string) => {
@@ -60,7 +57,6 @@ export default function Ae() {
     const r = e.currentTarget.getBoundingClientRect();
     const p = Math.max(0, Math.min(100, ((e.clientX - r.left) / r.width) * 100));
     setHead(p);
-    // 近いキーフレームを選択
     let best = selId;
     let bd = Infinity;
     for (const id in CLIPS) {
@@ -72,7 +68,6 @@ export default function Ae() {
     }
     if (bd < 2) setSelId(best);
   };
-
   const submit = () => {
     if (target && matches(pass, target.key!)) {
       setDecrypted((d) => (d.includes(target.id) ? d : [...d, target.id]));
@@ -83,87 +78,94 @@ export default function Ae() {
     }
   };
 
-  // こなの案内文
   const konaLine = clearedCh1
     ? CLIPS[CHAPTER1_TARGET].onDecrypt!
     : selId === "first"
-      ? "そう、その最初のログは“読める”。連絡先IDを覚えて、革命の日 2011-07-12 のクリップに戻って。"
-      : "革命の日(2011-07-12)は暗号化されてる。鍵は、いちばん最初のログ(2011-04-16)で彼が晒した“連絡先ID”。";
+      ? "そう、その最初のログは“読める”。連絡先IDを覚えて、革命の日 2011-07-12 に戻って！"
+      : "革命の日(2011-07-12)は暗号化されてる。鍵は、いちばん最初のログ(2011-04-16)で彼が晒した“連絡先ID”だよ。";
+
+  const panel = "rounded-2xl border-2 border-line bg-panel/80 shadow-[0_6px_0_rgba(0,0,0,0.4)]";
+  const chip = "rounded-full px-3 py-1 text-xs font-black tracking-wider";
 
   return (
-    <div className="flex h-[100dvh] w-full flex-col overflow-hidden bg-[#1a1a1a] text-[13px] text-[#c9c9c9]">
-      {/* メニューバー */}
-      <div className="flex items-center gap-4 border-b border-[#0d0d0d] bg-[#1b1b1b] px-3 py-1.5">
-        <span className="font-bold text-[#9a7bff]">Ae</span>
-        <span className="text-[#8a8a8a]">revolution.aep — Adobe After Effects</span>
-        <div className="ml-4 hidden gap-4 sm:flex">
+    <div className="flex h-[100dvh] w-full flex-col gap-2 overflow-hidden bg-[#0d0a16] p-2 text-text sm:p-3">
+      {/* ===== メニューバー（チャンキー） ===== */}
+      <div className={`${panel} flex items-center gap-3 px-3 py-2`}>
+        <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#7a4bff] to-[#b46bff] text-lg font-black text-white shadow-[0_0_16px_rgba(180,107,255,0.6)]">
+          Ae
+        </span>
+        <span className="text-base font-black text-brand">revolution<span className="text-muted-foreground">.aep</span></span>
+        <div className="ml-2 hidden gap-1 sm:flex">
           {MENUS.map((m) => (
-            <span key={m} className="cursor-default text-[#b4b4b4] hover:text-white">
+            <span key={m} className="cursor-default rounded-lg px-2.5 py-1 text-sm text-muted-foreground hover:bg-white/5 hover:text-text">
               {m}
             </span>
           ))}
         </div>
-        <span className="ml-auto text-[11px] text-[#8a8a8a]">
-          復号 {decrypted.filter((id) => CLIPS[id]?.key).length}/1
+        <span className={`${chip} ml-auto bg-white/5 text-accent2`}>
+          復号 {decrypted.filter((id) => CLIPS[id]?.key).length} / 1
         </span>
       </div>
 
-      {/* 上段：3パネル */}
-      <div className="grid min-h-0 flex-1 grid-cols-[170px_1fr_220px]">
+      {/* ===== 上段：3パネル ===== */}
+      <div className="grid min-h-0 flex-1 grid-cols-[190px_1fr_240px] gap-2">
         {/* Project */}
-        <div className="min-h-0 overflow-y-auto border-r border-[#0d0d0d] bg-[#232323] p-2">
-          <div className="mb-2 rounded bg-[#2c2c2c] px-2 py-1 text-[11px] text-[#8a8a8a]">
-            プロジェクト
-          </div>
-          <ul className="space-y-0.5 text-[12px]">
-            <li className="text-[#8a8a8a]">📁 footage</li>
-            {Object.values(CLIPS).map((c) => (
-              <li
-                key={c.id}
-                onClick={() => selectClip(c.id)}
-                className={`cursor-default truncate rounded px-1 ${
-                  selId === c.id ? "bg-[#38445a] text-white" : "hover:bg-[#2c2c2c]"
-                }`}
-                title={c.label}
-              >
-                {"  "}
-                {isRevealed(c) ? "🎬" : "🔒"} {c.date}.mp4
-              </li>
-            ))}
+        <div className={`${panel} flex min-h-0 flex-col overflow-hidden`}>
+          <div className={`${chip} m-2 self-start bg-white/5 text-muted-foreground`}>PROJECT</div>
+          <ul className="min-h-0 flex-1 space-y-1 overflow-y-auto px-2 pb-2 text-sm">
+            {Object.values(CLIPS).map((c) => {
+              const rv = isRevealed(c);
+              const sel = selId === c.id;
+              return (
+                <li
+                  key={c.id}
+                  onClick={() => selectClip(c.id)}
+                  title={c.label}
+                  className={`flex cursor-pointer items-center gap-2 rounded-xl border-2 px-2 py-1.5 transition ${
+                    sel
+                      ? "border-brand bg-brand/15 shadow-[0_0_12px_rgba(180,107,255,0.4)]"
+                      : "border-transparent hover:border-line hover:bg-white/5"
+                  }`}
+                >
+                  <span className="text-base">{rv ? "🎬" : "🔒"}</span>
+                  <span className={`truncate ${rv ? "text-text" : "text-muted-foreground"}`}>
+                    {c.date}
+                  </span>
+                </li>
+              );
+            })}
           </ul>
         </div>
 
         {/* Composition プレビュー */}
-        <div className="flex min-h-0 flex-col bg-[#1a1a1a]">
-          <div className="flex items-center gap-3 border-b border-[#0d0d0d] bg-[#232323] px-3 py-1 text-[11px] text-[#8a8a8a]">
-            <span className="text-[#c9c9c9]">コンポジション: revolution</span>
-            <span>100%</span>
-            <span className="ml-auto tabular-nums text-[#46e0ff]">{fmtTC(headDate)}</span>
+        <div className={`${panel} flex min-h-0 flex-col overflow-hidden`}>
+          <div className="flex items-center gap-2 px-3 py-2">
+            <div className={`${chip} bg-white/5 text-muted-foreground`}>COMP ▸ revolution</div>
+            <span className="ml-auto rounded-lg bg-black/40 px-2 py-1 font-mono text-sm font-bold tabular-nums text-accent2">
+              {fmtTC(headDate)}
+            </span>
           </div>
-          <div className="flex min-h-0 flex-1 items-center justify-center p-4">
-            <div className="relative aspect-video w-full max-w-[540px] overflow-hidden rounded-sm border border-black bg-black">
+          <div className="flex min-h-0 flex-1 items-center justify-center p-3">
+            <div className="relative aspect-video w-full max-w-[560px] overflow-hidden rounded-xl border-4 border-black bg-black shadow-[0_10px_30px_rgba(0,0,0,0.6)]">
               <div
                 className="absolute inset-0"
-                style={{
-                  background:
-                    "radial-gradient(120% 90% at 50% 30%, rgba(90,60,150,0.45), rgba(0,0,0,0.92))",
-                }}
+                style={{ background: "radial-gradient(120% 90% at 50% 28%, rgba(120,70,190,0.5), rgba(0,0,0,0.94))" }}
               />
-              <div className="absolute inset-4 border border-white/10" />
+              <div className="absolute inset-5 rounded-lg border border-white/10" />
               <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
                 {selClip && isRevealed(selClip) ? (
-                  <div className="anim-fadeup">
-                    <div className="text-[11px] tracking-[0.3em] text-[#46e0ff]">
+                  <div className="anim-pop">
+                    <div className="text-xs font-bold tracking-[0.35em] text-accent2">
                       {selClip.caption.small}
                     </div>
-                    <div className="mt-2 text-2xl font-black text-white drop-shadow sm:text-3xl">
+                    <div className="mt-3 text-3xl font-black text-white drop-shadow-[0_2px_12px_rgba(180,107,255,0.6)] sm:text-4xl">
                       {selClip.caption.big}
                     </div>
                     {selClip.caption.sub && (
-                      <div className="mt-2 text-xs text-[#b6a6e6]">{selClip.caption.sub}</div>
+                      <div className="mt-3 text-sm text-[#cbb6ef]">{selClip.caption.sub}</div>
                     )}
                     {selClip.caption.lines && (
-                      <div className="mt-4 space-y-1 text-sm text-white/85">
+                      <div className="mt-4 space-y-1.5 text-[15px] text-white/90">
                         {selClip.caption.lines.map((l, i) => (
                           <div key={i}>{l}</div>
                         ))}
@@ -171,43 +173,50 @@ export default function Ae() {
                     )}
                   </div>
                 ) : (
-                  <div className="anim-fadeup">
-                    <div className="text-[11px] tracking-[0.3em] text-[#8a8a8a]">
+                  <div className="anim-pop">
+                    <div className="text-xs font-bold tracking-[0.35em] text-muted-foreground">
                       {selClip?.caption.small}
                     </div>
-                    <div className="mt-3 font-mono text-3xl text-[#e0574a]">🔒 ENCRYPTED</div>
-                    <div className="mt-2 select-none font-mono text-xs text-[#5a5a5a]">
-                      ▓▓▒▓░▒▓▓░▓▒▓░▒▓▓▒░▓▓░▒▓
+                    <div
+                      className="mt-3 font-mono text-4xl font-black text-danger"
+                      style={{ animation: "blink 1.4s infinite" }}
+                    >
+                      🔒 LOCKED
                     </div>
-                    <div className="mt-3 text-xs text-[#8a8a8a]">
-                      → 右の Decrypt にパスフレーズを入力
+                    <div className="mt-3 select-none font-mono text-sm text-white/25">
+                      ▓▓▒▓░▒▓▓░▓▒▓░▒▓▓▒░▓▓
+                    </div>
+                    <div className="mt-4 rounded-full bg-brand/20 px-4 py-1.5 text-sm font-bold text-brand">
+                      → 右の DECRYPT で復号せよ
                     </div>
                   </div>
                 )}
               </div>
-              <div className="absolute inset-x-0 bottom-0 flex items-center gap-2 bg-black/50 px-3 py-1.5 text-[11px] text-white/80">
+              <div className="absolute inset-x-0 bottom-0 flex items-center gap-2 bg-black/60 px-3 py-2 text-sm text-white/85">
                 <span>▶</span>
-                <div className="h-1 flex-1 rounded bg-white/20">
-                  <div className="h-1 rounded bg-[#46e0ff]" style={{ width: `${head}%` }} />
+                <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/15">
+                  <div className="h-full rounded-full bg-accent2" style={{ width: `${head}%` }} />
                 </div>
-                <span className="tabular-nums">{fmtTC(headDate)}</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Effect Controls */}
-        <div className="min-h-0 overflow-y-auto border-l border-[#0d0d0d] bg-[#232323] p-2">
-          <div className="mb-2 rounded bg-[#2c2c2c] px-2 py-1 text-[11px] text-[#8a8a8a]">
-            エフェクトコントロール: {selClip?.date}.mp4
-          </div>
-          <div className="space-y-2 text-[12px]">
+        {/* Effect Controls ▸ DECRYPT */}
+        <div className={`${panel} flex min-h-0 flex-col overflow-hidden`}>
+          <div className={`${chip} m-2 self-start bg-white/5 text-muted-foreground`}>EFFECTS</div>
+          <div className="min-h-0 flex-1 space-y-3 overflow-y-auto px-3 pb-3 text-sm">
             <PropRow label="不透明度" value="100%" />
             <PropRow label="位置" value="960, 540" />
-            <div className="mt-2 rounded border border-[#3a3a3a] bg-[#1e1e1e] p-2">
-              <div className="mb-2 text-[11px] text-[#ffcf5a]">fx ▸ Decrypt (復号)</div>
+
+            <div className="rounded-2xl border-2 border-gold/40 bg-black/30 p-3">
+              <div className="mb-2 flex items-center gap-2 text-sm font-black text-gold">
+                <span>🔓</span> DECRYPT / 復号
+              </div>
               {clearedCh1 && selId === CHAPTER1_TARGET ? (
-                <div className="text-[12px] text-[#46f08a]">✓ 復号済み</div>
+                <div className="rounded-xl bg-[#1a3a24] px-3 py-2 text-center text-sm font-black text-[#46f08a]">
+                  ✓ 復号済み
+                </div>
               ) : target ? (
                 <>
                   <input
@@ -220,29 +229,29 @@ export default function Ae() {
                     placeholder="パスフレーズ"
                     autoComplete="off"
                     spellCheck={false}
-                    className="w-full rounded border bg-[#111] px-2 py-1 font-mono text-[13px] text-[#d6d6d6] outline-none"
+                    className="w-full rounded-xl border-2 bg-black/50 px-3 py-2.5 font-mono text-base font-bold text-text outline-none"
                     style={{
-                      borderColor: wrong ? "#e0574a" : "#3a3a3a",
+                      borderColor: wrong ? "var(--danger)" : "var(--line)",
                       animation: wrong ? "shake 0.4s" : undefined,
                     }}
                   />
                   <button
                     onClick={submit}
-                    className="mt-2 w-full rounded bg-[#3b6db0] py-1 text-[12px] font-semibold text-white hover:bg-[#4a80c8]"
+                    className="mt-2 w-full rounded-xl bg-gradient-to-b from-[#c98bff] to-[#8a4bff] py-2.5 text-base font-black text-white shadow-[0_4px_0_#5a2fb0] transition active:translate-y-0.5 active:shadow-[0_1px_0_#5a2fb0]"
                   >
                     復号する
                   </button>
                   {wrong && (
-                    <p className="mt-1 text-[11px] text-[#e0574a]">
-                      その鍵じゃ開かない。最初のログをもう一度。
+                    <p className="mt-2 text-xs font-bold text-danger">
+                      ✗ その鍵じゃ開かない。最初のログをもう一度。
                     </p>
                   )}
                 </>
               ) : (
-                <div className="text-[11px] text-[#8a8a8a]">
+                <div className="text-xs text-muted-foreground">
                   {selClip && isRevealed(selClip)
-                    ? "このクリップは復号済み／読み取り可能。"
-                    : "このクリップの復号手段は、次の章で解放。"}
+                    ? "このクリップは復号済み。"
+                    : "このクリップの鍵は、次の章で解放。"}
                 </div>
               )}
             </div>
@@ -250,39 +259,48 @@ export default function Ae() {
         </div>
       </div>
 
-      {/* 下段：タイムライン */}
-      <div className="flex h-[38%] min-h-0 flex-col border-t border-[#0d0d0d] bg-[#1e1e1e]">
-        <div className="flex items-center gap-2 border-b border-[#0d0d0d] bg-[#232323] px-3 py-1.5 text-[11px]">
-          <span className="shrink-0 text-[#ff6bd6]">こな@skype »</span>
-          <span className="truncate text-[#d0d0d0]">{konaLine}</span>
+      {/* ===== こな（大きめ吹き出し） ===== */}
+      <div className={`${panel} flex items-center gap-3 px-3 py-2`}>
+        <span className="relative size-11 shrink-0 overflow-hidden rounded-full ring-2 ring-[#ff6bd6]">
+          <Image src="/images/chars/kona.svg" alt="こな" fill className="object-cover" />
+        </span>
+        <div className="min-w-0">
+          <div className="text-xs font-black text-[#ff6bd6]">こな</div>
+          <div className="truncate text-sm text-text">{konaLine}</div>
         </div>
+      </div>
 
-        <div className="grid min-h-0 flex-1 grid-cols-[160px_1fr]">
+      {/* ===== タイムライン（チャンキー） ===== */}
+      <div className={`${panel} flex h-[34%] min-h-0 flex-col overflow-hidden`}>
+        <div className="grid min-h-0 flex-1 grid-cols-[150px_1fr]">
           {/* レイヤー名 */}
-          <div className="border-r border-[#0d0d0d] bg-[#232323] text-[12px]">
-            <div className="h-7 border-b border-[#0d0d0d]" />
+          <div className="border-r-2 border-line">
+            <div className="flex h-8 items-center px-3">
+              <span className={`${chip} bg-white/5 text-muted-foreground`}>TIMELINE</span>
+            </div>
             {LAYERS.map((l) => (
               <div
                 key={l.name}
-                className="flex h-9 items-center gap-2 border-b border-[#2a2a2a] px-2 text-[#c0c0c0]"
+                className="flex h-11 items-center gap-2 border-t-2 border-line/60 px-3 text-sm font-bold"
               >
-                <span className="inline-block size-2 rounded-sm" style={{ background: l.color }} />
-                <span className="truncate">{l.name}</span>
+                <span className="inline-block size-3 rounded" style={{ background: l.color, boxShadow: `0 0 8px ${l.color}` }} />
+                <span className="truncate text-text">{l.name}</span>
               </div>
             ))}
           </div>
 
           {/* グラフ */}
           <div className="relative min-h-0 overflow-hidden">
+            {/* ルーラー */}
             <div
-              className="relative h-7 cursor-pointer border-b border-[#0d0d0d] bg-[#262626]"
+              className="relative h-8 cursor-pointer border-b-2 border-line bg-black/20"
               onClick={onRuler}
               title="クリックでプレイヘッド移動"
             >
               {[2011, 2013, 2015, 2017, 2019, 2021, 2023, 2025].map((y) => (
                 <div
                   key={y}
-                  className="absolute top-0 h-full border-l border-[#3a3a3a] pl-1 text-[10px] text-[#8a8a8a]"
+                  className="absolute top-0 flex h-full items-center border-l border-line/60 pl-1 text-[11px] font-bold text-muted-foreground"
                   style={{ left: `${pct(`${y}-01-01`)}%` }}
                 >
                   {y}
@@ -291,32 +309,30 @@ export default function Ae() {
             </div>
 
             {LAYERS.map((l) => (
-              <div key={l.name} className="relative h-9 border-b border-[#2a2a2a]">
+              <div key={l.name} className="relative h-11 border-t-2 border-line/40">
                 {l.clipIds.map((id) => {
                   const c = CLIPS[id];
-                  const revealed = isRevealed(c);
-                  const isSel = selId === id;
+                  const rv = isRevealed(c);
+                  const sel = selId === id;
                   return (
                     <button
                       key={id}
                       onClick={() => selectClip(id)}
                       title={`${c.date}　${c.label}`}
-                      className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2"
+                      className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 transition hover:scale-125"
                       style={{ left: `${pct(c.date)}%` }}
                     >
                       <span
-                        className="block size-3 rotate-45 border transition"
+                        className={`block size-4 rotate-45 rounded-[3px] border-2 ${rv ? "anim-pop" : ""}`}
                         style={{
-                          background: revealed ? l.color : "transparent",
+                          background: rv ? l.color : "transparent",
                           borderColor: l.color,
-                          boxShadow: isSel ? `0 0 8px ${l.color}` : "none",
-                          opacity: revealed ? 1 : 0.55,
+                          boxShadow: sel || rv ? `0 0 12px ${l.color}` : "none",
+                          opacity: rv ? 1 : 0.6,
                         }}
                       />
-                      {!revealed && (
-                        <span className="absolute -top-3 left-1/2 -translate-x-1/2 text-[9px]">
-                          🔒
-                        </span>
+                      {!rv && (
+                        <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 text-[11px]">🔒</span>
                       )}
                     </button>
                   );
@@ -324,10 +340,10 @@ export default function Ae() {
               </div>
             ))}
 
-            {/* プレイヘッド */}
+            {/* プレイヘッド（ノブつき） */}
             <div className="pointer-events-none absolute top-0 z-10 h-full" style={{ left: `${head}%` }}>
-              <div className="mx-auto h-full w-px bg-[#46e0ff]" />
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 border-x-4 border-t-4 border-x-transparent border-t-[#46e0ff]" />
+              <div className="mx-auto h-full w-0.5 bg-accent2 shadow-[0_0_10px_rgba(70,224,255,0.9)]" />
+              <div className="absolute top-0 left-1/2 size-3 -translate-x-1/2 -translate-y-0 rounded-b-sm bg-accent2 shadow-[0_0_10px_rgba(70,224,255,0.9)]" />
             </div>
           </div>
         </div>
@@ -338,9 +354,9 @@ export default function Ae() {
 
 function PropRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center justify-between">
-      <span className="text-[#a0a0a0]">{label}</span>
-      <span className="tabular-nums text-[#d6d6d6]">{value}</span>
+    <div className="flex items-center justify-between rounded-lg bg-white/5 px-2 py-1">
+      <span className="text-muted-foreground">{label}</span>
+      <span className="font-mono font-bold tabular-nums text-text">{value}</span>
     </div>
   );
 }
