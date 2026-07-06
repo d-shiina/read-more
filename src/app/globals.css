@@ -1,133 +1,25 @@
 @import "tailwindcss";
+@import "fumadocs-ui/css/neutral.css";
+@import "fumadocs-ui/css/preset.css";
+@source "../../node_modules/fumadocs-ui/dist/**/*.js";
 
+/* 謎解き用のちょいアクセント */
 :root {
-  --bg: #07060c;
-  --panel: #0e0b18;
-  --panel-2: #151024;
-  --line: #2a2140;
-  --text: #e7e2f5;
-  --muted: #9a90bd;
-  --neon: #b46bff;
-  --neon-2: #4be3ff;
-  --neon2: #4be3ff; /* alias used by inline styles / SVG fills */
-  --danger: #ff5d7a;
-  --gold: #ffd166;
+  --puzzle-accent: #7c5cff;
 }
 
-@theme inline {
-  --color-bg: var(--bg);
-  --color-panel: var(--panel);
-  --color-line: var(--line);
-  --color-text: var(--text);
-  --color-muted: var(--muted);
-  --color-neon: var(--neon);
-  --color-neon2: var(--neon-2);
-  --font-sans: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Noto Sans JP",
-    "Yu Gothic", Meiryo, system-ui, sans-serif;
+/* 「答えを入力」欄まわり */
+.answer-input {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.08em;
 }
 
-html,
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--font-sans);
-  -webkit-tap-highlight-color: transparent;
-  overscroll-behavior: none;
-}
-
-/* Interactive hotspot styling inside SVG scenes */
-.hotspot {
-  cursor: pointer;
-  outline: none;
-  transition: filter 0.15s ease, opacity 0.15s ease;
-}
-.hotspot:hover {
-  filter: drop-shadow(0 0 6px var(--neon)) drop-shadow(0 0 14px var(--neon));
-}
-.hotspot:focus-visible {
-  filter: drop-shadow(0 0 6px var(--neon2)) drop-shadow(0 0 14px var(--neon2));
-}
-
-@keyframes floaty {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-4px);
-  }
-}
-
-@keyframes pulseGlow {
-  0%,
-  100% {
-    opacity: 0.35;
-  }
-  50% {
-    opacity: 0.85;
-  }
-}
-
-@keyframes flicker {
-  0%,
-  19%,
-  21%,
-  50%,
-  55%,
-  100% {
-    opacity: 1;
-  }
-  20%,
-  52% {
-    opacity: 0.6;
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes whiteout {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes shake {
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-  20%,
-  60% {
-    transform: translateX(-8px);
-  }
-  40%,
-  80% {
-    transform: translateX(8px);
-  }
-}
-
-.anim-fade {
-  animation: fadeIn 0.4s ease both;
-}
-
-/* Scrollbar */
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-::-webkit-scrollbar-thumb {
-  background: var(--line);
-  border-radius: 999px;
+/* view-source 誘導のヒント：画面には出さず、HTMLソースにだけ残す */
+.sr-clue {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }

@@ -1,20 +1,32 @@
-import type { Metadata } from "next";
 import "./globals.css";
+import type { Metadata } from "next";
+import { RootProvider } from "fumadocs-ui/provider/next";
+import { DocsLayout } from "fumadocs-ui/layouts/docs";
+import { tree } from "@/lib/tree";
 
 export const metadata: Metadata = {
-  title: "革命からの脱出 — kakumei escape",
-  description:
-    "オンラインゲーム「革命」に溺れた廃人の部屋から脱出せよ。クリック型の脱出ゲーム。",
+  title: {
+    default: "read more",
+    template: "%s ｜ read more",
+  },
+  description: "続きは、続きを読むからどうぞ！",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="ja" className="h-full antialiased">
-      <body className="min-h-full">{children}</body>
+    <html lang="ja" suppressHydrationWarning>
+      <body>
+        <RootProvider
+          theme={{ defaultTheme: "dark", enableSystem: true }}
+          search={{ enabled: false }}
+        >
+          <DocsLayout tree={tree} nav={{ title: "read more" }}>
+            {children}
+          </DocsLayout>
+        </RootProvider>
+      </body>
     </html>
   );
 }
