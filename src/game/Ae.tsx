@@ -262,7 +262,7 @@ export default function Ae() {
       {/* ===== こな（大きめ吹き出し） ===== */}
       <div className={`${panel} flex items-center gap-3 px-3 py-2`}>
         <span className="relative size-11 shrink-0 overflow-hidden rounded-full ring-2 ring-[#cf8fb0]">
-          <Image src="/images/chars/kona.svg" alt="こな" fill className="object-cover" />
+          <Image src="/images/chars/kona.svg" alt="こな" fill sizes="44px" className="object-cover" />
         </span>
         <div className="min-w-0">
           <div className="text-xs font-bold text-[#cf8fb0]">こな</div>
