@@ -12,7 +12,8 @@
 
 ## 登場する固有名詞メモ（謎の素材）
 
-- **本人のハンドル**: zaftx / 4g.MiNaMi / さかやん / SakayaN / みるくふぁいたー、Skype: `zaftzaft3`
+- **本人のハンドル**: zaftx / 4g.MiNaMi / さかやん / SakayaN、Skype: `zaftzaft3`
+- **みるくふぁいたー**: 別人（「みるくふぁいたーのブログ更新する詐欺」と引き合いに出している知人ブロガー）
 - **メインFPS**: A.V.A（Alliance of Valiant Arms／本文では "Variant" と誤記も）
 - **クラン**: `4gotten`（= forgotten）。本人はスナ専（SR）
 - **クラン仲間（オフ会）**: 4g.MiNaMi / 4g.KeNSiN(=楓) / 4g.Ktarimo(=きいたりもん) / 4g.Erwich(=フィッツ) / hellfox(ファミマの四つ星店員)
