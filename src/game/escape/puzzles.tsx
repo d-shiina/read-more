@@ -137,7 +137,13 @@ export function Ch1Exam({ api }: PP) {
     const ok = i === q.a;
     api.blip();
     setScore((s) => s + (ok ? 1 : 0));
-    setFeedback(ok ? "○ 極端に合っている" : `× 極端に間違っている（正解: ${q.opts[q.a]}）`);
+    setFeedback(
+      ok
+        ? q.q.includes("午後13時")
+          ? "○ 極端に合っている——彼の世界では、午後13時は実在する。"
+          : "○ 極端に合っている"
+        : `× 極端に間違っている（正解: ${q.opts[q.a]}）`,
+    );
     setTimeout(() => {
       setFeedback(null);
       if (qi + 1 >= EXAM.length) setPhase("result");
