@@ -17,6 +17,7 @@ import {
   ITEMS,
   KONA_FACES,
   KONA_MAX,
+  objectiveText,
   SEALS,
 } from "./data";
 import { useSfx } from "./sfx";
@@ -77,6 +78,81 @@ function Intro({ onDone, blip }: { onDone: () => void; blip: () => void }) {
   );
 }
 
+/* ================= PC判定（lg以上で2カラム。DOM二重化を避けるためJSで分岐） ================= */
+
+function useIsDesktop() {
+  const [desktop, setDesktop] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    /* eslint-disable-next-line react-hooks/set-state-in-effect */
+    setDesktop(mq.matches);
+    const on = () => setDesktop(mq.matches);
+    mq.addEventListener("change", on);
+    return () => mq.removeEventListener("change", on);
+  }, []);
+  return desktop;
+}
+
+/* ================= 持ち物・実績パネル（モバイルタブ／PCサイドバー共用） ================= */
+
+function ItemsPanel({ inventory }: { inventory: string[] }) {
+  return (
+    <div className="anim-fadeup space-y-3">
+      {inventory.length === 0 && (
+        <p className="rounded-2xl border border-dashed border-line p-4 text-center text-sm text-muted-foreground">
+          まだ何も持っていない。未練を解くと、思い出が手に入る。
+        </p>
+      )}
+      {inventory.map((id) => (
+        <div key={id} className="rounded-2xl border border-line bg-panel/60 p-4">
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">{ITEMS[id].icon}</span>
+            <div>
+              <div className="font-bold">{ITEMS[id].name}</div>
+              <div className="text-[11px] text-gold">{ITEMS[id].date}</div>
+            </div>
+          </div>
+          <p className="mt-2 text-xs text-muted-foreground">{ITEMS[id].desc}</p>
+        </div>
+      ))}
+      {inventory.length > 0 && (
+        <p className="text-center text-[11px] text-muted-foreground/60">
+          ※ この思い出たちは、未練④で素材になる気がする
+        </p>
+      )}
+    </div>
+  );
+}
+
+function AchPanel({ ach, collapsible }: { ach: string[]; collapsible?: boolean }) {
+  const body = (
+    <ul className="mt-2 space-y-1">
+      {ACH_DEFS.map((a) => (
+        <li key={a.id} className={ach.includes(a.id) ? "" : "opacity-40"}>
+          {ach.includes(a.id) ? a.label : `？？？（ヒント: ${a.hint}）`}
+        </li>
+      ))}
+    </ul>
+  );
+  if (collapsible)
+    return (
+      <details className="anim-fadeup rounded-2xl border border-line bg-panel/60 p-4 text-sm">
+        <summary className="cursor-pointer font-bold text-muted-foreground">
+          🏆 実績 {ach.length}/{ACH_DEFS.length}
+        </summary>
+        {body}
+      </details>
+    );
+  return (
+    <div className="anim-fadeup rounded-2xl border border-line bg-panel/60 p-4 text-sm">
+      <div className="text-muted-foreground">
+        実績 {ach.length}/{ACH_DEFS.length}
+      </div>
+      {body}
+    </div>
+  );
+}
+
 /* ================= 本体 ================= */
 
 export default function EscapeGame() {
@@ -91,6 +167,7 @@ export default function EscapeGame() {
   const [loaded, setLoaded] = useState(false);
 
   const [tab, setTab] = useState<"blog" | "dm" | "items" | "ach">("blog");
+  const isDesktop = useIsDesktop();
   const [dmSeen, setDmSeen] = useState(0);
   const [toast, setToast] = useState<string | null>(null);
   const [konamiFx, setKonamiFx] = useState(false);
@@ -298,7 +375,7 @@ export default function EscapeGame() {
 
   return (
     <div
-      className="mx-auto flex min-h-[100dvh] max-w-2xl flex-col px-4 pb-24 pt-5"
+      className="mx-auto flex min-h-[100dvh] w-full max-w-2xl flex-col px-4 pb-24 pt-5 lg:max-w-6xl lg:px-8 lg:pb-10"
       style={konamiFx ? { animation: "hueSpin 2.2s linear" } : undefined}
     >
       <style>{`@keyframes hueSpin { from { filter: hue-rotate(0deg); } to { filter: hue-rotate(360deg); } }`}</style>
@@ -362,51 +439,39 @@ export default function EscapeGame() {
         </div>
       </header>
 
-      {/* メイン */}
-      <main className="mt-4 flex-1">
-        {tab === "blog" && <BlogViewer state={state} api={api} />}
-        {tab === "dm" && <DMWindow state={state} api={api} />}
-        {tab === "items" && (
-          <div className="anim-fadeup space-y-3">
-            {inventory.length === 0 && (
-              <p className="rounded-2xl border border-dashed border-line p-4 text-center text-sm text-muted-foreground">
-                まだ何も持っていない。未練を解くと、思い出が手に入る。
-              </p>
-            )}
-            {inventory.map((id) => (
-              <div key={id} className="rounded-2xl border border-line bg-panel/60 p-4">
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl">{ITEMS[id].icon}</span>
-                  <div>
-                    <div className="font-bold">{ITEMS[id].name}</div>
-                    <div className="text-[11px] text-gold">{ITEMS[id].date}</div>
-                  </div>
-                </div>
-                <p className="mt-2 text-xs text-muted-foreground">{ITEMS[id].desc}</p>
-              </div>
-            ))}
-            {inventory.length > 0 && (
-              <p className="text-center text-[11px] text-muted-foreground/60">
-                ※ この思い出たちは、未練④で素材になる気がする
-              </p>
-            )}
-          </div>
-        )}
-        {tab === "ach" && (
-          <div className="anim-fadeup rounded-2xl border border-line bg-panel/60 p-4 text-sm">
-            <div className="text-muted-foreground">
-              実績 {ach.length}/{ACH_DEFS.length}
+      {/* メイン（PC: 2カラム＋常設サイドバー ／ モバイル: タブ切替） */}
+      <div className="mt-4 flex-1 lg:grid lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start lg:gap-6">
+        <main className="min-w-0">
+          {(isDesktop || tab === "blog") && (
+            <BlogViewer state={state} api={api} showMission={!isDesktop} />
+          )}
+          {!isDesktop && tab === "dm" && <DMWindow state={state} api={api} />}
+          {!isDesktop && tab === "items" && <ItemsPanel inventory={inventory} />}
+          {!isDesktop && tab === "ach" && <AchPanel ach={ach} />}
+        </main>
+
+        {isDesktop && (
+          <aside className="sticky top-4 max-h-[calc(100dvh-2rem)] space-y-4 overflow-y-auto pr-1">
+            <div className="rounded-2xl border border-gold/30 bg-gold/5 p-3 text-sm">
+              <span className="text-[10px] font-black tracking-widest text-gold">MISSION</span>
+              <p className="mt-0.5 font-bold">{objectiveText(chapter)}</p>
             </div>
-            <ul className="mt-2 space-y-1">
-              {ACH_DEFS.map((a) => (
-                <li key={a.id} className={ach.includes(a.id) ? "" : "opacity-40"}>
-                  {ach.includes(a.id) ? a.label : `？？？（ヒント: ${a.hint}）`}
-                </li>
-              ))}
-            </ul>
-          </div>
+            <div className="rounded-2xl border border-line bg-panel/60 p-4 backdrop-blur">
+              <div className="mb-3 text-[10px] font-black tracking-widest text-muted-foreground">
+                💬 DM
+              </div>
+              <DMWindow state={state} api={api} />
+            </div>
+            <div>
+              <div className="mb-2 text-[10px] font-black tracking-widest text-muted-foreground">
+                🎒 持ち物
+              </div>
+              <ItemsPanel inventory={inventory} />
+            </div>
+            <AchPanel ach={ach} collapsible />
+          </aside>
         )}
-      </main>
+      </div>
 
       {/* フッタ：アクセスカウンター（押せる） */}
       <footer className="mt-8 flex flex-col items-center gap-2 pb-2 text-[11px] text-muted-foreground/60">
@@ -427,7 +492,8 @@ export default function EscapeGame() {
         <span>Powered by livedoor NEXT™ AI Remaster β ｜ 思い出は暗号化されていません</span>
       </footer>
 
-      {/* 下部ドック */}
+      {/* 下部ドック（モバイルのみ。PCはサイドバー常設） */}
+      {!isDesktop && (
       <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-frame/90 backdrop-blur">
         <div className="mx-auto grid max-w-2xl grid-cols-4 gap-1 px-4 py-2">
           {(
@@ -457,10 +523,11 @@ export default function EscapeGame() {
           ))}
         </div>
       </nav>
+      )}
 
       {/* 思い出Cookie同意バナー（モダンすぎる） */}
       {flags.intro && !flags.cookie && (
-        <div className="fixed inset-x-0 bottom-16 z-40 px-4">
+        <div className="fixed inset-x-0 bottom-16 z-40 px-4 lg:bottom-6">
           <div className="anim-fadeup mx-auto max-w-2xl rounded-2xl border border-line bg-panel p-4 shadow-2xl">
             <p className="text-sm font-bold">🍪 このブログは思い出Cookieを使用します</p>
             <p className="mt-1 text-xs text-muted-foreground">
