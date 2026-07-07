@@ -70,7 +70,7 @@ export const TIMELINE_ANSWER = ["bullet", "tag", "stub", "receipt"];
 /* ================= 未練（章）メタ ================= */
 
 export const SEALS = [
-  { no: 1, icon: "🎫", title: "試験", hint: "「基本情報技術者試験（FE）」の記事に錠前がかかっている" },
+  { no: 1, icon: "🎫", title: "基本情報技術者試験", hint: "「基本情報技術者試験（FE）」の記事に錠前がかかっている" },
   { no: 2, icon: "🎤", title: "クラン", hint: "「オフ会してきた！」の記事に錠前がかかっている" },
   { no: 3, icon: "🎯", title: "師匠", hint: "「TOP」の記事のどこかに、致命的なミスが眠っている" },
   { no: 4, icon: "🎞", title: "革命", hint: "未レンダリングのプロジェクトファイルが記事一覧に落ちている" },
@@ -83,7 +83,7 @@ export function objectiveText(chapter: number): string {
     case 0:
       return "本人確認: 最初の記事を読んで、自分のSkype IDを思い出せ";
     case 1:
-      return "未練①「試験」— FEの記事の錠前を解け";
+      return "未練①「基本情報技術者試験」— 記事の錠前を解け";
     case 2:
       return "未練②「クラン」— オフ会の記事の錠前を解け";
     case 3:
@@ -315,7 +315,7 @@ export const EXAM: ExamQ[] = [
     a: 3,
   },
   {
-    q: "問4. 2011年7月10日、FE試験の自己採点の結果はどうなったか。",
+    q: "問4. 2011年7月10日、基本情報技術者試験の自己採点の結果はどうなったか。",
     opts: ["満点", "不合格", "合格", "試験会場を間違えた"],
     a: 1,
   },
@@ -470,7 +470,7 @@ export const DM_SCRIPT: DmExchange[] = [
   {
     id: "dm1",
     minChapter: 2,
-    lines: ["ねえ、FEの記事見つけちゃった。『あ～ｗ詰んだくせぇ・・・』って", "ふふ"],
+    lines: ["ねえ、基本情報技術者試験の記事見つけちゃった。『あ～ｗ詰んだくせぇ・・・』って", "ふふ"],
     choices: [
       {
         label: "笑うなよ、あれ本気で凹んだんだぞ",

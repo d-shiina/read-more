@@ -155,7 +155,7 @@ export function Ch1Exam({ api }: PP) {
 
   if (phase === "pin")
     return (
-      <LockFrame title="未練①「試験」 — 4桁のPINロック">
+      <LockFrame title="未練①「基本情報技術者試験」 — 4桁のPINロック">
         <Ghost>
           <p>
             この記事、開けない部分がある。PINは……そうだな、
@@ -190,7 +190,7 @@ export function Ch1Exam({ api }: PP) {
   if (phase === "exam") {
     const q = EXAM[qi];
     return (
-      <LockFrame title={`未練①「試験」 — 追試験 ${qi + 1}/${EXAM.length}`}>
+      <LockFrame title={`未練①「基本情報技術者試験」 — 追試験 ${qi + 1}/${EXAM.length}`}>
         <p className="mt-2 text-xs text-muted-foreground">
           ※ この試験は「極端に合っている設問」か「極端に間違っている設問」しか出ません（本人の証言より）
         </p>
@@ -213,7 +213,7 @@ export function Ch1Exam({ api }: PP) {
   }
 
   return (
-    <LockFrame title="未練①「試験」 — 採点結果">
+    <LockFrame title="未練①「基本情報技術者試験」 — 採点結果">
       <p className="mt-3 text-center text-5xl font-black text-brand">
         {score}/{EXAM.length}
       </p>
