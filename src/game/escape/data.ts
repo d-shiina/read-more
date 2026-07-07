@@ -279,12 +279,39 @@ export const ARTICLES: Article[] = [
   },
 ];
 
-/** 各記事に紐づく錠前（この章のときだけパズルが出る） */
+/** 各記事に紐づく錠前の章番号（記事側は「手がかり」表示にのみ使う。錠前本体は一覧に別ファイルとして出る） */
 export const ARTICLE_PUZZLE: Record<string, number> = {
   a1: 0, // 本人確認（Skype ID）
-  a2: 1, // 未練① 試験
+  a2: 1, // 未練① 基本情報技術者試験
   a5: 2, // 未練② クラン
   a9: 3, // 未練③ 師匠（誤字スナイプ）
+};
+
+/** 記事一覧に落ちている錠前ファイル（章0〜3）。記事と同じ画面に問題を置かない */
+export const LOCK_FILES: Record<
+  number,
+  { label: string; file: string; desc: string }
+> = {
+  0: {
+    label: "SYSTEM — 本人確認",
+    file: "🔐 auth_required.sys",
+    desc: "凍結解除には管理人認証が必要です ｜ ヒント: 最初の記事",
+  },
+  1: {
+    label: "未練① — 施錠された続き",
+    file: "🎫 kihonjoho_gijutsusha_shiken.pin",
+    desc: "4桁PIN ＋ 追試験 ｜ 手がかり: 基本情報技術者試験の記事",
+  },
+  2: {
+    label: "未練② — 破損ファイル",
+    file: "🎤 karaoke_saitenhyo.xls",
+    desc: "採点表がバグっている ｜ 手がかり: オフ会の記事",
+  },
+  3: {
+    label: "未練③ — 狙撃指令",
+    file: "🎯 sogeki_shirei.txt",
+    desc: "15年物の誤字が潜んでいる ｜ 戦場: TOPの記事",
+  },
 };
 
 /* ================= 未練① 試験 ================= */

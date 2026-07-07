@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { GameApi, GameState } from "./types";
-import { ARTICLES, ARTICLE_PUZZLE, BTN_SUB, objectiveText, type Article } from "./data";
+import { ARTICLES, ARTICLE_PUZZLE, BTN_SUB, LOCK_FILES, objectiveText, type Article } from "./data";
 import { Ch0Skype, Ch1Exam, Ch2Karaoke, Ch3Snipe, Ch4Timeline, Ch5Terminal } from "./puzzles";
 
 interface BP {
@@ -198,11 +198,14 @@ function ArticleView({ article, state, api, onBack }: BP & { article: Article; o
           </p>
         )}
 
-        {/* この記事にかかっている錠前 */}
-        {puzzleChapter === state.chapter && puzzleChapter === 0 && <Ch0Skype state={state} api={api} />}
-        {puzzleChapter === state.chapter && puzzleChapter === 1 && <Ch1Exam state={state} api={api} />}
-        {puzzleChapter === state.chapter && puzzleChapter === 2 && <Ch2Karaoke state={state} api={api} />}
-        {puzzleChapter === state.chapter && puzzleChapter === 3 && <Ch3Snipe state={state} api={api} />}
+        {/* 手がかり記事の案内（問題そのものは同じ画面に置かない。カンニング防止） */}
+        {puzzleChapter === state.chapter && (
+          <p className="mt-5 rounded-xl border border-gold/40 bg-gold/5 p-3 text-xs text-gold">
+            📖 この記事のどこかに、手がかりがある。よく読んで覚えたら、記事一覧の錠前ファイル
+            <b className="font-mono">「{LOCK_FILES[puzzleChapter].file.replace(/^\S+ /, "")}」</b>
+            に挑め。
+          </p>
+        )}
       </div>
     </article>
   );
@@ -214,6 +217,21 @@ export default function BlogViewer({ state, api }: BP) {
   const [view, setView] = useState<string>("list");
   const [query, setQuery] = useState("");
   const [searched, setSearched] = useState("");
+
+  // 錠前ファイル（章0〜3）: 記事とは別画面で解く
+  if (view === `lock${state.chapter}` && state.chapter <= 3) {
+    const Lock = [Ch0Skype, Ch1Exam, Ch2Karaoke, Ch3Snipe][state.chapter];
+    return (
+      <div className="anim-fadeup">
+        <button onClick={() => setView("list")} className="text-xs font-bold text-accent2 hover:underline">
+          ← 記事一覧へ（記事を読み直すのは自由。行き来しろ）
+        </button>
+        <div className="mt-1">
+          <Lock state={state} api={api} />
+        </div>
+      </div>
+    );
+  }
 
   if (view === "aep" && state.chapter === 4)
     return (
@@ -268,6 +286,23 @@ export default function BlogViewer({ state, api }: BP) {
         </button>
       </div>
       {searched && <SearchResult query={searched} state={state} api={api} />}
+
+      {/* 錠前ファイル（章の入口。記事と同じ画面に問題は置かない） */}
+      {state.chapter <= 3 && (
+        <button
+          onClick={() => {
+            api.blip();
+            setView(`lock${state.chapter}`);
+          }}
+          className="anim-pop mt-4 block w-full rounded-2xl border border-gold/50 bg-gradient-to-r from-gold/10 to-transparent p-4 text-left transition hover:border-gold"
+        >
+          <div className="text-[10px] font-black tracking-widest text-gold">
+            🗝 {LOCK_FILES[state.chapter].label}
+          </div>
+          <div className="mt-1 font-mono text-sm font-bold">{LOCK_FILES[state.chapter].file}</div>
+          <div className="text-xs text-muted-foreground">{LOCK_FILES[state.chapter].desc}</div>
+        </button>
+      )}
 
       {/* 特殊ファイル（章の入口） */}
       {state.chapter === 4 && (
@@ -327,7 +362,7 @@ export default function BlogViewer({ state, api }: BP) {
                 </div>
                 {hasLock && (
                   <span className="shrink-0 animate-pulse rounded-full bg-gold/20 px-2 py-0.5 text-[10px] font-black text-gold">
-                    🗝 未練あり
+                    📖 手がかり
                   </span>
                 )}
               </div>
