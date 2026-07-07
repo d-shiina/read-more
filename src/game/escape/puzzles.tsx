@@ -15,6 +15,7 @@ import {
   KARAOKE_WORD,
   KONA_MAX,
   MOVIE_FRAMES,
+  SPELL_QUIZ,
   SNIPE_LINES,
   SNIPE_TARGET,
   TIMELINE_ANSWER,
@@ -450,11 +451,12 @@ export function Ch3Snipe({ api }: PP) {
 
 export function Ch4Timeline({ state, api }: PP) {
   const [slots, setSlots] = useState<(string | null)[]>([null, null, null, null]);
-  const [phase, setPhase] = useState<"edit" | "render" | "movie" | "thanks">("edit");
+  const [phase, setPhase] = useState<"edit" | "boot" | "render" | "movie" | "thanks">("edit");
   const [prog, setProg] = useState(0);
   const [stuck, setStuck] = useState(false);
   const [frame, setFrame] = useState(0);
   const [err, setErr] = useState<string | null>(null);
+  const [bootMsg, setBootMsg] = useState<string | null>(null);
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(
@@ -489,6 +491,23 @@ export function Ch4Timeline({ state, api }: PP) {
       setErr("レンダリングエラー: 時系列がバグってます＞ｗ＜（アイテムの日付を見ろ、日付を）");
       return;
     }
+    api.blip();
+    setPhase("boot");
+  };
+
+  const boot = (i: number) => {
+    const q = SPELL_QUIZ[i];
+    setBootMsg(q.msg);
+    if (q.ok) {
+      api.grantA("spell");
+      api.fanfare();
+      setTimeout(() => startRender(), 1400);
+    } else {
+      api.blip();
+    }
+  };
+
+  const startRender = () => {
     setPhase("render");
     let v = 0;
     timer.current = setInterval(() => {
@@ -533,6 +552,51 @@ export function Ch4Timeline({ state, api }: PP) {
     api.fanfare();
     api.solve(4);
   };
+
+  if (phase === "boot") {
+    const solved = bootMsg !== null && SPELL_QUIZ.some((q) => q.ok && q.msg === bootMsg);
+    return (
+      <LockFrame title="project_kakumei.aep — 起動中……">
+        <div className="mt-3 rounded-xl border border-danger/50 bg-black/50 p-4">
+          <p className="font-mono text-sm font-bold text-danger">
+            ⚠ 起動エラー（コード: 2011）
+          </p>
+          <p className="mt-2 font-mono text-xs leading-relaxed text-muted-foreground">
+            ソフトウェア <b className="text-danger">「AfterEffect」</b> が見つかりません。
+            <br />
+            ……このプロジェクトの作者は、15年間ソフトの名前を間違えて覚えていた可能性があります。
+          </p>
+        </div>
+        <p className="mt-3 text-sm font-bold">正しいソフト名を選んで、起動し直せ：</p>
+        <div className="mt-2 grid grid-cols-2 gap-2">
+          {SPELL_QUIZ.map((q, i) => (
+            <button
+              key={i}
+              disabled={solved}
+              onClick={() => boot(i)}
+              className="rounded-xl border border-line bg-black/20 p-3 font-mono text-sm font-bold transition hover:border-brand disabled:opacity-50"
+            >
+              {q.label}
+            </button>
+          ))}
+        </div>
+        {bootMsg && (
+          <p
+            className={`anim-pop mt-3 text-sm font-bold ${solved ? "text-brand" : "text-danger"}`}
+            style={solved ? undefined : { animation: "shake 0.4s" }}
+          >
+            {bootMsg}
+          </p>
+        )}
+        <Ghost>
+          <p>
+            ……え、ウソだろ。革命が起こったとまで書いた相手の名前を、俺、ずっと……？
+            ブログ、何回も書いたよな？　<b>AfterEffect</b>って……＞ｗ＜
+          </p>
+        </Ghost>
+      </LockFrame>
+    );
+  }
 
   if (phase === "render")
     return (

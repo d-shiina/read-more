@@ -232,7 +232,7 @@ export const ARTICLES: Article[] = [
     title: "ブログ更新続けれるかな！？",
     cat: "雑談",
     minChapter: 1,
-    ai: "AIによる要約: 革命は起こりましたが、その後15年間何も起こっていません。",
+    ai: "AIによる要約: 革命は起こりましたが、その後15年間何も起こっていません。（※ソフト名の綴りについては、指摘を控えます）",
     reactions: [19, 27, 15, 4],
     body: [
       "最近なぜブログを開設したのか分からないくらい、更新していなかった。急に更新意欲が湧いてきたので、更新しました＞ｗ＜",
@@ -365,6 +365,30 @@ export const SNIPE_LINES: string[][] = [
 export const SNIPE_TARGET = "Variant";
 
 /* ================= 未練④ 革命（フラグムービー） ================= */
+
+/** 起動エラー: 15年間、革命の相手の名前を間違えて覚えていた（実話） */
+export const SPELL_QUIZ: { label: string; ok: boolean; msg: string }[] = [
+  {
+    label: "AfterEffect",
+    ok: false,
+    msg: "それが15年間の間違いだ＞ｗ＜　ブログに何回書いたと思ってる。",
+  },
+  {
+    label: "After Effects",
+    ok: true,
+    msg: "起動に成功しました。……そうか、最後に s が付くのか。15年目の真実。",
+  },
+  {
+    label: "AfterEffects",
+    ok: false,
+    msg: "惜しい！　sは付けた。スペースだ、スペースが足りない！",
+  },
+  {
+    label: "アフターエフェクト",
+    ok: false,
+    msg: "カタカナで逃げるな。",
+  },
+];
 
 export const MOVIE_FRAMES: { t: string; s: string }[] = [
   { t: "2010", s: "SuddenAttack —— Jokaに出会う。SRを教わる。" },
@@ -563,6 +587,7 @@ export const ACH_DEFS: AchDef[] = [
   { id: "deathvoice", label: "🎤 採点表マスター", hint: "カラオケ採点表を一発で全問正解" },
   { id: "sniper", label: "🎯 Jokaの後継者", hint: "誤字をノーミスで狙撃（🪖と排他）" },
   { id: "grenade", label: "🪖 グレで飛びすぎ", hint: "狙撃を3回外す（🎯と排他）" },
+  { id: "spell", label: "🔤 革命家、綴りを知る", hint: "あのソフト、15年間なんて呼んでた？" },
   { id: "movie", label: "🎞 革命、完遂", hint: "15年越しにレンダリングを完了する" },
   { id: "tweets", label: "🐦 全掘", hint: "黒歴史ツイート14本を全部読む" },
   { id: "minecraft", label: "⛏ 14年越しの鯖立て", hint: "検索欄が、約束を覚えている" },
