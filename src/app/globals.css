@@ -264,3 +264,17 @@ body {
 .term-cyan { color: var(--term-cyan); text-shadow: 0 0 6px rgba(70, 224, 255, 0.4); }
 .term-magenta { color: var(--term-magenta); text-shadow: 0 0 6px rgba(255, 107, 214, 0.4); }
 .cursor-blink { animation: blink 1s steps(2, start) infinite; }
+
+/* ===== read more ばかゲー用 ===== */
+@keyframes fall {
+  from { transform: translateY(-12vh) rotate(0deg); }
+  to { transform: translateY(112vh) rotate(360deg); }
+}
+@keyframes marqueeX {
+  from { transform: translateX(100%); }
+  to { transform: translateX(-100%); }
+}
+@keyframes creditsUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(-130%); }
+}

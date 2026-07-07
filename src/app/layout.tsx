@@ -2,9 +2,9 @@ import "./globals.css";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "read more — 謎解きゲーム",
+  title: "read more ｜ 続きは、続きを読むからどうぞ！",
   description:
-    "ネトゲに溺れた夜と、こなちゃんと、フラグムービーへの憧れ。ブラウザで遊ぶ画像つき謎解きゲーム。",
+    "「続きを読む」を押すだけのゲーム。攻略はありません。続きは、続きを読むからどうぞ！＞ｗ＜",
 };
 
 export default function RootLayout({

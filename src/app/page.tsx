@@ -1,5 +1,5 @@
-import BakaGame from "@/game/BakaGame";
+import ReadMore from "@/game/ReadMore";
 
 export default function Home() {
-  return <BakaGame />;
+  return <ReadMore />;
 }
