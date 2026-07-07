@@ -77,7 +77,7 @@ export function Ch0Skype({ api }: PP) {
       tries === 0
         ? `「${value}」……違うって。自分のIDだぞ？＞ｗ＜`
         : tries === 1
-          ? "ヒント: この記事の最後のほう。「興味のある方は……Skypeで◯◯まで」"
+          ? "ヒント: 最初の記事の最後のほう。「興味のある方は……Skypeで◯◯まで」"
           : "もう答え書いてあるようなもんだろ！ z、a、f、t……",
     );
     setValue("");
@@ -91,7 +91,7 @@ export function Ch0Skype({ api }: PP) {
           まずは本人確認だ。<b>自分のSkype ID</b>、まだ覚えてるよな？
         </p>
         <p className="mt-1 text-xs text-muted-foreground">
-          （忘れてたら、この記事のどこかに書いてた気がする＞ｗ＜）
+          （忘れてたら、最初の記事「記念すべき1回目の更新」のどこかに書いてた気がする＞ｗ＜）
         </p>
       </Ghost>
       <input
@@ -158,12 +158,12 @@ export function Ch1Exam({ api }: PP) {
       <LockFrame title="未練①「基本情報技術者試験」 — 4桁のPINロック">
         <Ghost>
           <p>
-            この記事、開けない部分がある。PINは……そうだな、
+            「基本情報技術者試験」の記事の続きが施錠されてる。PINは……そうだな、
             <b>「あ～ｗ詰んだくせぇ・・・」が生まれた日</b>。4桁で頼む。
           </p>
           {tries >= 2 && (
             <p className="mt-1 text-xs text-muted-foreground">
-              ヒント: 7月10日に受けたって、上に書いてあるだろ＞ｗ＜（月2桁＋日2桁）
+              ヒント: 何月何日に受けたか、記事に書いてあるだろ＞ｗ＜（月2桁＋日2桁）
             </p>
           )}
         </Ghost>
@@ -302,7 +302,7 @@ export function Ch2Karaoke({ api }: PP) {
       <Ghost>
         <p>
           あの日のカラオケ、採点表がバグって<b>誰が何をしたか</b>ぐちゃぐちゃになってる。
-          記事を読んで直してくれ。全員リアフレだから思い出せるはず＞ｗ＜
+          「オフ会してきた！」の記事を読んで直してくれ。全員リアフレだから思い出せるはず＞ｗ＜
         </p>
       </Ghost>
       <div className="mt-4 space-y-2">
@@ -379,7 +379,7 @@ export function Ch3Snipe({ api }: PP) {
       <LockFrame title="未練③「師匠」 — 狙撃指令">
         <Ghost>
           <p>
-            Jokaから（脳内で）指令だ。この記事のどこかに、<b>15年間放置された致命的な誤字</b>がある。
+            Jokaから（脳内で）指令だ。TOPの記事のどこかに、<b>15年間放置された致命的な誤字</b>がある。
             スナ専の意地を見せろ。SRを構えて、一発で仕留めるんだ。
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
