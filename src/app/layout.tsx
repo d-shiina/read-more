@@ -2,9 +2,9 @@ import "./globals.css";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "read more ｜ 続きは、続きを読むからどうぞ！",
+  title: "read more: ESCAPE ｜ 続きは、脱出してからどうぞ！",
   description:
-    "「続きを読む」を押すだけのゲーム。攻略はありません。続きは、続きを読むからどうぞ！＞ｗ＜",
+    "15年放置されたブログの中に閉じ込められた。彼の実際の投稿から謎を解き、5つの未練を解放して脱出せよ。こな度を上げれば、寝落ちもしもしエンドが待っている＞ｗ＜",
 };
 
 export default function RootLayout({
