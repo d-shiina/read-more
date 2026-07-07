@@ -1,5 +1,5 @@
-import ReadMore from "@/game/ReadMore";
+import EscapeGame from "@/game/escape/EscapeGame";
 
 export default function Home() {
-  return <ReadMore />;
+  return <EscapeGame />;
 }
