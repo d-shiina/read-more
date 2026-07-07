@@ -213,8 +213,13 @@ function ArticleView({ article, state, api, onBack }: BP & { article: Article; o
 
 /* ================= 本体 ================= */
 
-export default function BlogViewer({ state, api, showMission = true }: BP & { showMission?: boolean }) {
-  const [view, setView] = useState<string>("list");
+export default function BlogViewer({
+  state,
+  api,
+  showMission = true,
+  view,
+  onView,
+}: BP & { showMission?: boolean; view: string; onView: (v: string) => void }) {
   const [query, setQuery] = useState("");
   const [searched, setSearched] = useState("");
 
@@ -223,7 +228,7 @@ export default function BlogViewer({ state, api, showMission = true }: BP & { sh
     const Lock = [Ch0Skype, Ch1Exam, Ch2Karaoke, Ch3Snipe][state.chapter];
     return (
       <div className="anim-fadeup">
-        <button onClick={() => setView("list")} className="text-xs font-bold text-accent2 hover:underline">
+        <button onClick={() => onView("list")} className="text-xs font-bold text-accent2 hover:underline">
           ← 記事一覧へ（記事を読み直すのは自由。行き来しろ）
         </button>
         <div className="mt-1">
@@ -236,7 +241,7 @@ export default function BlogViewer({ state, api, showMission = true }: BP & { sh
   if (view === "aep" && state.chapter === 4)
     return (
       <div className="anim-fadeup">
-        <button onClick={() => setView("list")} className="text-xs font-bold text-accent2 hover:underline">
+        <button onClick={() => onView("list")} className="text-xs font-bold text-accent2 hover:underline">
           ← 記事一覧へ
         </button>
         <div className="mt-3">
@@ -248,7 +253,7 @@ export default function BlogViewer({ state, api, showMission = true }: BP & { sh
   if (view === "tw" && state.chapter >= 5 && !state.ending)
     return (
       <div className="anim-fadeup">
-        <button onClick={() => setView("list")} className="text-xs font-bold text-accent2 hover:underline">
+        <button onClick={() => onView("list")} className="text-xs font-bold text-accent2 hover:underline">
           ← 記事一覧へ
         </button>
         <div className="mt-3">
@@ -259,7 +264,7 @@ export default function BlogViewer({ state, api, showMission = true }: BP & { sh
 
   const article = ARTICLES.find((a) => a.id === view);
   if (article && article.minChapter <= state.chapter)
-    return <ArticleView article={article} state={state} api={api} onBack={() => setView("list")} />;
+    return <ArticleView article={article} state={state} api={api} onBack={() => onView("list")} />;
 
   return (
     <div className="anim-fadeup">
@@ -294,7 +299,7 @@ export default function BlogViewer({ state, api, showMission = true }: BP & { sh
         <button
           onClick={() => {
             api.blip();
-            setView(`lock${state.chapter}`);
+            onView(`lock${state.chapter}`);
           }}
           className="anim-pop mt-4 block w-full rounded-2xl border border-gold/50 bg-gradient-to-r from-gold/10 to-transparent p-4 text-left transition hover:border-gold"
         >
@@ -309,7 +314,7 @@ export default function BlogViewer({ state, api, showMission = true }: BP & { sh
       {/* 特殊ファイル（章の入口） */}
       {state.chapter === 4 && (
         <button
-          onClick={() => setView("aep")}
+          onClick={() => onView("aep")}
           className="anim-pop mt-4 block w-full rounded-2xl border border-gold/50 bg-gradient-to-r from-gold/10 to-transparent p-4 text-left transition hover:border-gold"
         >
           <div className="text-[10px] font-black tracking-widest text-gold">🗝 未練④ — 見知らぬファイル</div>
@@ -319,7 +324,7 @@ export default function BlogViewer({ state, api, showMission = true }: BP & { sh
       )}
       {state.chapter >= 5 && !state.ending && (
         <button
-          onClick={() => setView("tw")}
+          onClick={() => onView("tw")}
           className="anim-pop mt-4 block w-full rounded-2xl border border-danger/50 bg-gradient-to-r from-danger/10 to-transparent p-4 text-left transition hover:border-danger"
         >
           <div className="text-[10px] font-black tracking-widest text-danger">🗝 未練⑤ — 最後のファイル</div>
@@ -351,7 +356,7 @@ export default function BlogViewer({ state, api, showMission = true }: BP & { sh
               key={a.id}
               onClick={() => {
                 api.blip();
-                setView(a.id);
+                onView(a.id);
               }}
               className={`block w-full rounded-2xl border p-4 text-left transition hover:border-brand ${
                 hasLock ? "border-gold/60 bg-gold/5" : "border-line bg-panel/60 backdrop-blur"
@@ -374,6 +379,85 @@ export default function BlogViewer({ state, api, showMission = true }: BP & { sh
           );
         })}
       </div>
+    </div>
+  );
+}
+
+/* ================= NavTree（PC左サイドバーのドキュメント風ナビ） ================= */
+
+export function NavTree({
+  state,
+  view,
+  onView,
+}: {
+  state: GameState;
+  view: string;
+  onView: (v: string) => void;
+}) {
+  const item = (active: boolean) =>
+    `block w-full truncate rounded-md px-2 py-1.5 text-left text-[13px] transition ${
+      active
+        ? "bg-brand/10 font-bold text-brand"
+        : "text-muted-foreground hover:bg-white/5 hover:text-text"
+    }`;
+
+  const groups: { year: string; list: Article[] }[] = [];
+  for (const a of ARTICLES) {
+    const year = a.date.slice(0, 5); // 例: "2026年"
+    const g = groups.find((x) => x.year === year);
+    if (g) g.list.push(a);
+    else groups.push({ year, list: [a] });
+  }
+
+  return (
+    <div className="space-y-5">
+      <div>
+        <div className="mb-1.5 px-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
+          Game
+        </div>
+        <button onClick={() => onView("list")} className={item(view === "list")}>
+          🏠 ホーム
+        </button>
+        {state.chapter <= 3 && (
+          <button
+            onClick={() => onView(`lock${state.chapter}`)}
+            className={item(view === `lock${state.chapter}`)}
+          >
+            {LOCK_FILES[state.chapter].file}
+          </button>
+        )}
+        {state.chapter === 4 && (
+          <button onClick={() => onView("aep")} className={item(view === "aep")}>
+            🎞 project_kakumei.aep
+          </button>
+        )}
+        {state.chapter >= 5 && !state.ending && (
+          <button onClick={() => onView("tw")} className={item(view === "tw")}>
+            💾 old_twitter_backup.zip
+          </button>
+        )}
+      </div>
+      {groups.map((g) => (
+        <div key={g.year}>
+          <div className="mb-1.5 px-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
+            {g.year}
+          </div>
+          {g.list.map((a) =>
+            a.minChapter <= state.chapter ? (
+              <button key={a.id} onClick={() => onView(a.id)} className={item(view === a.id)}>
+                {a.title}
+              </button>
+            ) : (
+              <div
+                key={a.id}
+                className="truncate px-2 py-1.5 text-[13px] text-muted-foreground/40"
+              >
+                🧊 凍結された記事
+              </div>
+            ),
+          )}
+        </div>
+      ))}
     </div>
   );
 }

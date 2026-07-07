@@ -5,12 +5,13 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --bg: #0f1115;
-  --frame: #171a20;
-  --panel: #1c2027;
-  --panel-2: #232833;
-  --line: #2c323d;
-  --text: #dde2ea;
+  /* fumadocs風: ニュートラルな漆黒＋極細ボーダー */
+  --bg: #0a0a0c;
+  --frame: #0e0e11;
+  --panel: #121216;
+  --panel-2: #18181d;
+  --line: #26262c;
+  --text: #e7e7ec;
   --muted: oklch(0.97 0 0);
   --accent: oklch(0.97 0 0);
   --accent-2: #6fe6f2;
@@ -38,7 +39,7 @@
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
+  --radius: 0.5rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
