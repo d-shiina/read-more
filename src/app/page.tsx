@@ -1,5 +1,5 @@
-import ReadMore from "@/game/ReadMore";
+import Quiz from "@/game/Quiz";
 
 export default function Home() {
-  return <ReadMore />;
+  return <Quiz />;
 }
