@@ -371,7 +371,7 @@ export const SPELL_QUIZ: { label: string; ok: boolean; msg: string }[] = [
   {
     label: "AfterEffect",
     ok: false,
-    msg: "それが15年間の間違いだ＞ｗ＜　ブログに何回書いたと思ってる。",
+    msg: "それが例の間違いだ＞ｗ＜　ちなみにブログに書いたのは記事1本で2回だけ。その2回とも、これ。誤字率100%。",
   },
   {
     label: "After Effects",
