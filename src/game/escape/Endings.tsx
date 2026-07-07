@@ -232,7 +232,7 @@ export function Results({
   const endings = (["A", "B", "C"] as Ending[]).filter((e) => state.flags[`end_${e}`]);
 
   return (
-    <div className="mx-auto flex min-h-[100dvh] max-w-2xl flex-col px-4 py-8">
+    <div className="mx-auto flex min-h-[100dvh] max-w-2xl flex-col px-4 py-8 lg:max-w-3xl">
       <p className="text-center text-xs tracking-widest text-accent2">read more: ESCAPE</p>
       <p className="mt-3 text-center text-4xl font-black tracking-widest">【脱出】</p>
       {state.ending && (

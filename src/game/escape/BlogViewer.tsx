@@ -213,7 +213,7 @@ function ArticleView({ article, state, api, onBack }: BP & { article: Article; o
 
 /* ================= 本体 ================= */
 
-export default function BlogViewer({ state, api }: BP) {
+export default function BlogViewer({ state, api, showMission = true }: BP & { showMission?: boolean }) {
   const [view, setView] = useState<string>("list");
   const [query, setQuery] = useState("");
   const [searched, setSearched] = useState("");
@@ -263,11 +263,13 @@ export default function BlogViewer({ state, api }: BP) {
 
   return (
     <div className="anim-fadeup">
-      {/* 現在の目標 */}
-      <div className="rounded-2xl border border-gold/30 bg-gold/5 p-3 text-sm">
-        <span className="text-[10px] font-black tracking-widest text-gold">MISSION</span>
-        <p className="mt-0.5 font-bold">{objectiveText(state.chapter)}</p>
-      </div>
+      {/* 現在の目標（PCではサイドバーに常設なので隠す） */}
+      {showMission && (
+        <div className="rounded-2xl border border-gold/30 bg-gold/5 p-3 text-sm">
+          <span className="text-[10px] font-black tracking-widest text-gold">MISSION</span>
+          <p className="mt-0.5 font-bold">{objectiveText(state.chapter)}</p>
+        </div>
+      )}
 
       {/* ブログ内検索（モダンすぎる機能その3） */}
       <div className="mt-4 flex gap-2">
@@ -326,8 +328,8 @@ export default function BlogViewer({ state, api }: BP) {
         </button>
       )}
 
-      {/* 記事一覧 */}
-      <div className="mt-4 space-y-3">
+      {/* 記事一覧（PCは2列グリッド） */}
+      <div className="mt-4 grid gap-3 lg:grid-cols-2">
         {ARTICLES.map((a) => {
           const unlocked = a.minChapter <= state.chapter;
           const hasLock = ARTICLE_PUZZLE[a.id] === state.chapter;
