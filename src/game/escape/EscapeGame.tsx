@@ -21,7 +21,7 @@ import {
   SEALS,
 } from "./data";
 import { useSfx } from "./sfx";
-import BlogViewer from "./BlogViewer";
+import BlogViewer, { NavTree } from "./BlogViewer";
 import DMWindow from "./DMWindow";
 import { EndingScene, Results } from "./Endings";
 
@@ -167,6 +167,7 @@ export default function EscapeGame() {
   const [loaded, setLoaded] = useState(false);
 
   const [tab, setTab] = useState<"blog" | "dm" | "items" | "ach">("blog");
+  const [blogView, setBlogView] = useState("list");
   const isDesktop = useIsDesktop();
   const [dmSeen, setDmSeen] = useState(0);
   const [toast, setToast] = useState<string | null>(null);
@@ -375,75 +376,87 @@ export default function EscapeGame() {
 
   return (
     <div
-      className="mx-auto flex min-h-[100dvh] w-full max-w-2xl flex-col px-4 pb-24 pt-5 lg:max-w-6xl lg:px-8 lg:pb-10"
+      className="min-h-[100dvh]"
       style={konamiFx ? { animation: "hueSpin 2.2s linear" } : undefined}
     >
       <style>{`@keyframes hueSpin { from { filter: hue-rotate(0deg); } to { filter: hue-rotate(360deg); } }`}</style>
 
-      {/* ヘッダ（モダンすぎる） */}
-      <header className="rounded-3xl border border-line bg-panel/60 p-4 backdrop-blur">
-        <div className="flex items-start justify-between gap-2">
-          <div className="min-w-0">
-            <div className="flex flex-wrap items-center gap-1.5 text-[10px]">
-              <span className="rounded-full bg-gradient-to-r from-[#3fd6e6]/20 to-[#ff8ac2]/20 px-2 py-0.5 font-black tracking-wider text-accent2">
-                livedoor NEXT™ AI Remaster β
+      {/* トップバー（fumadocs風: スリム・sticky・blur） */}
+      <header className="sticky top-0 z-40 border-b border-line bg-bg/80 backdrop-blur-md">
+        <div className="mx-auto flex h-14 w-full max-w-2xl items-center justify-between gap-3 px-4 lg:max-w-6xl lg:px-8 xl:max-w-7xl">
+          <div className="flex min-w-0 items-center gap-2.5">
+            <h1 className="truncate text-sm font-bold tracking-tight">
+              <span className="bg-gradient-to-r from-brand to-[#ff8ac2] bg-clip-text text-transparent">
+                read more: ESCAPE
               </span>
-              <span className="rounded-full bg-danger/15 px-2 py-0.5 font-bold text-danger">
-                ⚠ 凍結まで: 未練あと{Math.max(0, 6 - chapter)}
-              </span>
-            </div>
-            <h1 className="mt-1.5 text-lg font-black leading-snug sm:text-xl">
-              4g.MiNaMiの気まぐれ日記 <span className="text-brand">: ESCAPE</span>
             </h1>
-            <div className="mt-0.5 text-[10px] text-muted-foreground">
-              — 更新頻度: 約15年に1回 ｜ 現在: 閉じ込められています —
-            </div>
+            <span className="hidden truncate text-xs text-muted-foreground md:inline">
+              4g.MiNaMiの気まぐれ日記
+            </span>
+            <span className="hidden shrink-0 rounded-full border border-line px-2 py-0.5 text-[10px] text-muted-foreground sm:inline">
+              AI Remaster β
+            </span>
           </div>
-          <button
-            onClick={() => setMuted((m) => !m)}
-            aria-label="効果音の切り替え"
-            className="shrink-0 rounded-full border border-line px-2.5 py-1.5 text-xs hover:border-brand"
-          >
-            {muted ? "🔇" : "🔊"}
-          </button>
-        </div>
-
-        {/* 未練の封印 */}
-        <div className="mt-3 flex items-center gap-1.5">
-          {SEALS.map((s) => {
-            const solved = chapter > s.no;
-            const current = chapter === s.no;
-            return (
-              <div
-                key={s.no}
-                title={s.hint}
-                className={`flex h-9 flex-1 items-center justify-center gap-1 rounded-xl border text-sm transition ${
-                  solved
-                    ? "border-brand/60 bg-brand/15"
-                    : current
-                      ? "animate-pulse border-gold/60 bg-gold/10"
-                      : "border-line bg-black/20 opacity-50"
-                }`}
-              >
-                <span>{solved ? "✅" : s.icon}</span>
-                <span className="hidden text-[10px] font-bold sm:inline">{s.title}</span>
-              </div>
-            );
-          })}
-          <div
-            className="ml-1 shrink-0 text-right font-mono text-sm font-black"
-            title={`こな度 ${kona}/${KONA_MAX}`}
-          >
-            <span className="text-[#ff8ac2]">{KONA_FACES[Math.min(kona, KONA_MAX)]}</span>
+          <div className="flex shrink-0 items-center gap-2">
+            <span className="hidden text-[10px] font-bold text-danger md:inline">
+              凍結まで あと{Math.max(0, 6 - chapter)}
+            </span>
+            <div className="flex items-center gap-1">
+              {SEALS.map((s) => {
+                const solved = chapter > s.no;
+                const current = chapter === s.no;
+                return (
+                  <span
+                    key={s.no}
+                    title={`未練${s.no}「${s.title}」: ${s.hint}`}
+                    className={`flex size-7 items-center justify-center rounded-md border text-xs transition ${
+                      solved
+                        ? "border-brand/50 bg-brand/10"
+                        : current
+                          ? "animate-pulse border-gold/50 bg-gold/10"
+                          : "border-line opacity-40"
+                    }`}
+                  >
+                    {solved ? "✅" : s.icon}
+                  </span>
+                );
+              })}
+            </div>
+            <span
+              className="hidden font-mono text-xs font-black text-[#ff8ac2] sm:inline"
+              title={`こな度 ${kona}/${KONA_MAX}`}
+            >
+              {KONA_FACES[Math.min(kona, KONA_MAX)]}
+            </span>
+            <button
+              onClick={() => setMuted((m) => !m)}
+              aria-label="効果音の切り替え"
+              className="rounded-md border border-line px-2 py-1 text-xs transition hover:border-brand"
+            >
+              {muted ? "🔇" : "🔊"}
+            </button>
           </div>
         </div>
       </header>
 
-      {/* メイン（PC: 2カラム＋常設サイドバー ／ モバイル: タブ切替） */}
-      <div className="mt-4 flex-1 lg:grid lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start lg:gap-6">
+      <div className="mx-auto flex w-full max-w-2xl flex-col px-4 pb-24 lg:max-w-6xl lg:px-8 lg:pb-10 xl:max-w-7xl">
+
+      {/* メイン（xl: 3カラムのドキュメント風 / lg: 2カラム / モバイル: タブ切替） */}
+      <div className="mt-6 flex-1 lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start lg:gap-8 xl:grid-cols-[220px_minmax(0,1fr)_340px]">
+        {isDesktop && (
+          <nav className="sticky top-[4.5rem] hidden max-h-[calc(100dvh-6rem)] overflow-y-auto pr-2 xl:block">
+            <NavTree state={state} view={blogView} onView={setBlogView} />
+          </nav>
+        )}
         <main className="min-w-0">
           {(isDesktop || tab === "blog") && (
-            <BlogViewer state={state} api={api} showMission={!isDesktop} />
+            <BlogViewer
+              state={state}
+              api={api}
+              showMission={!isDesktop}
+              view={blogView}
+              onView={setBlogView}
+            />
           )}
           {!isDesktop && tab === "dm" && <DMWindow state={state} api={api} />}
           {!isDesktop && tab === "items" && <ItemsPanel inventory={inventory} />}
@@ -451,7 +464,7 @@ export default function EscapeGame() {
         </main>
 
         {isDesktop && (
-          <aside className="sticky top-4 max-h-[calc(100dvh-2rem)] space-y-4 overflow-y-auto pr-1">
+          <aside className="sticky top-[4.5rem] max-h-[calc(100dvh-6rem)] space-y-4 overflow-y-auto pr-1">
             <div className="rounded-2xl border border-gold/30 bg-gold/5 p-3 text-sm">
               <span className="text-[10px] font-black tracking-widest text-gold">MISSION</span>
               <p className="mt-0.5 font-bold">{objectiveText(chapter)}</p>
@@ -489,8 +502,10 @@ export default function EscapeGame() {
             </span>
           ))}
         </button>
+        <span>— 更新頻度: 約15年に1回 ｜ 現在: 閉じ込められています —</span>
         <span>Powered by livedoor NEXT™ AI Remaster β ｜ 思い出は暗号化されていません</span>
       </footer>
+      </div>{/* /コンテンツコンテナ */}
 
       {/* 下部ドック（モバイルのみ。PCはサイドバー常設） */}
       {!isDesktop && (
