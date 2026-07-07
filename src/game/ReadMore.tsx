@@ -3,7 +3,7 @@
 /**
  * read more — 「続きは、続きを読むからどうぞ！」だけで作られたばかゲー。
  *
- * 仕組み：全16ステージ。1ステージ＝1つのボケ（毎回ちがう手口で裏切る）。
+ * 仕組み：全18ステージ。1ステージ＝1つのボケ（毎回ちがう手口で裏切る）。
  * 記事の日付が 2011→2026 に勝手に進んでいく＝“続き”に15年かかった、
  * という彼のブログの実話がそのまま構造になっている。最後だけ少し本気。
  */
@@ -22,6 +22,7 @@ const META: Meta[] = [
   { date: "2011年07月12日 01:49", title: "ブログ更新続けれるかな！？", cat: "雑談" },
   { date: "2011年07月12日 23:59", title: "続き", cat: "雑談" },
   { date: "2011年07月13日 00:00", title: "続きの続き", cat: "雑談" },
+  { date: "2011年07月18日 22:24", title: "オフ会してきた！", cat: "雑談" },
   { date: "2011年08月02日 06:40", title: "＞ｗ＜", cat: "雑談" },
   { date: "2011年12月31日 23:59", title: "続きを読み込み中", cat: "お知らせ" },
   { date: "2012年03月05日 03:30", title: "続きはこのボタンから！", cat: "雑談" },
@@ -42,6 +43,7 @@ const META: Meta[] = [
 const ACH: string[] = [
   "📖 読者、爆誕",
   "🔁 二度目の「続き」",
+  "🎤 DeathVoiceを見た",
   "🤔 これ、そういうゲーム？",
   "＞ｗ＜",
   "🌀 読み込みに騙された",
@@ -126,6 +128,7 @@ export default function ReadMore() {
   const [stage, setStage] = useState(0);
   const [reads, setReads] = useState(0);
   const [ach, setAch] = useState<number[]>([]);
+  const [bonus, setBonus] = useState<string[]>([]);
   const [startedAt, setStartedAt] = useState<number>(0);
   const [toast, setToast] = useState<string | null>(null);
   const [loaded, setLoaded] = useState(false);
@@ -142,6 +145,7 @@ export default function ReadMore() {
         if (typeof s.stage === "number") setStage(Math.min(s.stage, TOTAL - 1));
         if (typeof s.reads === "number") setReads(s.reads);
         if (Array.isArray(s.ach)) setAch(s.ach);
+        if (Array.isArray(s.bonus)) setBonus(s.bonus);
         setStartedAt(typeof s.startedAt === "number" ? s.startedAt : Date.now());
       } else {
         setStartedAt(Date.now());
@@ -157,9 +161,9 @@ export default function ReadMore() {
   useEffect(() => {
     if (!loaded) return;
     try {
-      localStorage.setItem(SAVE, JSON.stringify({ stage, reads, ach, startedAt }));
+      localStorage.setItem(SAVE, JSON.stringify({ stage, reads, ach, bonus, startedAt }));
     } catch {}
-  }, [stage, reads, ach, startedAt, loaded]);
+  }, [stage, reads, ach, bonus, startedAt, loaded]);
 
   // ach の最新値をrefにミラー（updater内での副作用を避けるため）
   const achRef = useRef<number[]>([]);
@@ -196,10 +200,70 @@ export default function ReadMore() {
     setStage(0);
     setReads(0);
     setAch([]);
+    setBonus([]);
     setStartedAt(Date.now());
     try {
       localStorage.removeItem(SAVE);
     } catch {}
+  }, []);
+
+  // 隠し実績（コナミコマンド・コンソール等）。stage実績とは別枠で管理。
+  const bonusRef = useRef<string[]>([]);
+  useEffect(() => {
+    bonusRef.current = bonus;
+  }, [bonus]);
+
+  const grantBonus = useCallback(
+    (id: string, label: string) => {
+      if (bonusRef.current.includes(id)) return;
+      bonusRef.current = [...bonusRef.current, id];
+      setBonus(bonusRef.current);
+      setToast(label);
+      if (toastTimer.current) clearTimeout(toastTimer.current);
+      toastTimer.current = setTimeout(() => setToast(null), 2800);
+      fanfare();
+    },
+    [fanfare],
+  );
+
+  // コナミコマンド：↑↑↓↓←→←→ba で隠し実績（どのステージからでも有効）
+  useEffect(() => {
+    const CODE = [
+      "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown",
+      "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight",
+      "b", "a",
+    ];
+    let buf: string[] = [];
+    const onKey = (e: KeyboardEvent) => {
+      buf.push(e.key.length === 1 ? e.key.toLowerCase() : e.key);
+      buf = buf.slice(-CODE.length);
+      if (buf.length === CODE.length && buf.every((k, i) => k === CODE[i])) {
+        grantBonus("konami", "🎮 裏技を見つけた（隠し実績）");
+        buf = [];
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [grantBonus]);
+
+  // 開発者コンソールを覗いた人へ。読むだけでなく、実際に叩いて初めて実績になる。
+  useEffect(() => {
+    console.log(
+      "%c……あ、見てるでしょ。",
+      "color:#3fd6e6;font-weight:bold;font-size:14px;",
+    );
+    console.log(
+      "%cソースまで読んでくれてありがとう＞ｗ＜\n続きが見たければ、ここに tsudzuki() って打ってみて。",
+      "color:#8b93a1;",
+    );
+    (window as unknown as { tsudzuki?: () => string }).tsudzuki = () => {
+      grantBonus("console", "🔍 コンソールを覗いた（隠し実績）");
+      return "続きは、続きを読むからどうぞ！＞ｗ＜";
+    };
+    return () => {
+      delete (window as unknown as { tsudzuki?: () => string }).tsudzuki;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const meta = META[stage];
@@ -237,7 +301,15 @@ export default function ReadMore() {
         </div>
         <h2 className="mt-1 text-lg font-bold">{meta.title}</h2>
         <div className="mt-3 text-sm leading-relaxed">
-          <Stage stage={stage} advance={advance} reset={reset} reads={reads} ach={ach} startedAt={startedAt} />
+          <Stage
+            stage={stage}
+            advance={advance}
+            reset={reset}
+            reads={reads}
+            ach={ach}
+            bonus={bonus}
+            startedAt={startedAt}
+          />
         </div>
       </article>
 
@@ -271,6 +343,7 @@ interface StageProps {
   reset: () => void;
   reads: number;
   ach: number[];
+  bonus: string[];
   startedAt: number;
 }
 
@@ -283,33 +356,43 @@ function Stage(p: StageProps) {
     case 2:
       return <S2 advance={p.advance} />;
     case 3:
-      return <S3 advance={p.advance} />;
+      return <S3Karaoke advance={p.advance} />;
     case 4:
-      return <S4Loading advance={p.advance} />;
+      return <S3 advance={p.advance} />;
     case 5:
-      return <S5Dodger advance={p.advance} />;
+      return <S4Loading advance={p.advance} />;
     case 6:
-      return <S6Title advance={p.advance} />;
+      return <S5Dodger advance={p.advance} />;
     case 7:
-      return <S7Twitter advance={p.advance} />;
+      return <S6Title advance={p.advance} />;
     case 8:
-      return <S7Scroll advance={p.advance} />;
+      return <S7Twitter advance={p.advance} />;
     case 9:
-      return <S8Countdown advance={p.advance} />;
+      return <S7Scroll advance={p.advance} />;
     case 10:
-      return <S9Multiplied advance={p.advance} />;
+      return <S8Countdown advance={p.advance} />;
     case 11:
-      return <S10Retro advance={p.advance} />;
+      return <S9Multiplied advance={p.advance} />;
     case 12:
-      return <S11FakeEnd advance={p.advance} />;
+      return <S10Retro advance={p.advance} />;
     case 13:
-      return <S12Kona advance={p.advance} />;
+      return <S11FakeEnd advance={p.advance} />;
     case 14:
-      return <S13Type advance={p.advance} />;
+      return <S12Kona advance={p.advance} />;
     case 15:
+      return <S13Type advance={p.advance} />;
+    case 16:
       return <S14Shibaku advance={p.advance} />;
     default:
-      return <S15Ending reset={p.reset} reads={p.reads} ach={p.ach} startedAt={p.startedAt} />;
+      return (
+        <S15Ending
+          reset={p.reset}
+          reads={p.reads}
+          ach={p.ach}
+          bonus={p.bonus}
+          startedAt={p.startedAt}
+        />
+      );
   }
 }
 
@@ -360,7 +443,57 @@ function S2({ advance }: A) {
   );
 }
 
-/* --- 3: 本文が顔文字だけ --- */
+/* --- 3: オフ会カラオケの選曲リスト（実話・ニックネームのみ） --- */
+const KARAOKE = [
+  { who: "楓", note: "熱唱", result: "テンション異常。即日、クラン専属DeathVoice担当に任命される。" },
+  { who: "きいたりもん", note: "ハッチポッチステーション", result: "選曲の意図は誰にも分からなかったが、なぜかチームワークは向上した。" },
+  { who: "フィッツ", note: "控えめに参加", result: "二人のテンションに飲まれて終始おとなしめ。CWの時は声出していこうな。" },
+  { who: "hellfox", note: "加藤ミリヤ推し", result: "Gongの時だけ謎に覚醒。歌い終えるとバイクに跨って帰っていった。" },
+  { who: "私", note: "・・・///", result: "（本人による語りはここで途切れている）" },
+];
+
+function S3Karaoke({ advance }: A) {
+  const [revealed, setRevealed] = useState<number[]>([]);
+  const done = revealed.length >= KARAOKE.length;
+
+  return (
+    <>
+      <p>4gottenのメンツでカラオケに行ってきた！オフ会っていっても全員リアフレなんだけどねｗ</p>
+      <p className="mt-1 text-xs text-muted-foreground">気になる人をタップして選曲結果を見る↓</p>
+
+      <div className="mt-3 space-y-2">
+        {KARAOKE.map((k, i) => {
+          const open = revealed.includes(i);
+          return (
+            <button
+              key={i}
+              onClick={() => !open && setRevealed((r) => [...r, i])}
+              className="w-full rounded-md border border-line bg-black/20 p-2.5 text-left transition hover:border-brand"
+            >
+              <div className="text-sm font-bold">
+                {k.who} <span className="font-normal text-muted-foreground">－ {k.note}</span>
+              </div>
+              {open && <p className="anim-fadeup mt-1 text-sm text-muted-foreground">{k.result}</p>}
+            </button>
+          );
+        })}
+      </div>
+
+      {done && (
+        <>
+          <p className="mt-3 text-sm text-muted-foreground">
+            その後サイゼでペペロンチーノ。AVAの話のはずが、なぜかカスタムロボの話で盛り上がる。
+          </p>
+          <button onClick={advance} className={`${BTN} anim-pop`}>
+            続きを読む →
+          </button>
+        </>
+      )}
+    </>
+  );
+}
+
+/* --- 4: 本文が顔文字だけ --- */
 function S3({ advance }: A) {
   return (
     <>
@@ -809,7 +942,9 @@ function S13Type({ advance }: A) {
       setReply("何か書いて！＞ｗ＜");
       return;
     }
-    if (/こな|みるく/.test(v)) {
+    if (/joka|じょーか|ジョーカ/i.test(v)) {
+      setReply("Jokaさまぁあああああああああ……ｗ　最近何してるんだろうな、あの人。");
+    } else if (/こな|みるく/.test(v)) {
       setReply("……呼んだ？（照）");
     } else if (/つづき|続き/.test(v)) {
       setReply("よくできました！えらい！");
@@ -879,15 +1014,22 @@ function S14Shibaku({ advance }: A) {
 }
 
 /* --- 15: エンディング（ここだけ少し本気） --- */
+const BONUS_LABEL: Record<string, string> = {
+  konami: "🎮 裏技を見つけた（↑↑↓↓←→←→BA）",
+  console: "🔍 コンソールで tsudzuki() を叩いた",
+};
+
 function S15Ending({
   reset,
   reads,
   ach,
+  bonus,
   startedAt,
 }: {
   reset: () => void;
   reads: number;
   ach: number[];
+  bonus: string[];
   startedAt: number;
 }) {
   const [elapsed, setElapsed] = useState<string>("");
@@ -931,6 +1073,17 @@ function S15Ending({
           ))}
         </ul>
       </div>
+
+      {bonus.length > 0 && (
+        <div className="mt-3 rounded-md border border-gold/40 bg-black/20 p-4 text-sm">
+          <div className="text-gold">🕵 隠し実績 {bonus.length}/{Object.keys(BONUS_LABEL).length}</div>
+          <ul className="mt-1 space-y-0.5">
+            {bonus.map((b) => (
+              <li key={b}>{BONUS_LABEL[b] ?? b}</li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <button onClick={reset} className={BTN_SUB}>
         はじめから読み直す
