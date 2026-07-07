@@ -3,9 +3,9 @@
 /**
  * read more — 「続きは、続きを読むからどうぞ！」だけで作られたばかゲー。
  *
- * v2:
+ * v2.1:
  * - 「続きを読む」を押すと、続きが“その場の下に”生える（記事が積み上がる。スライド遷移しない）
- * - 全ステージに「編注（2026年の本人）」＝未来の自分による全力セルフツッコミ
+ * - ツッコミ（編注）はTwitterステージ内のみ。他は素の黒歴史で勝負する
  * - 実績は全20個。素直に進めるだけでは5個前後しか取れない（寄り道・連打・監視・召喚で解除）
  * - 隠し：コナミコマンド／開発者コンソール
  */
@@ -35,14 +35,13 @@ const META: Meta[] = [
   { date: "2014年04月01日 00:00", title: "続きを読むボタン増量キャンペーン", cat: "サービス" },
   { date: "2016年09月09日 09:09", title: "あの頃のデザインにしてみた", cat: "懐古" },
   { date: "2020年02月02日 02:22", title: "最終回", cat: "重大発表" },
-  { date: "2023年11月11日 11:11", title: "コメントが来てた", cat: "交流" },
   { date: "2025年12月31日 23:59", title: "誠意を見せて", cat: "試練" },
   { date: "2026年04月15日 21:19", title: "お前らしばくぞｗ", cat: "" },
   { date: "2026年07月07日 07:07", title: "ここまで読んでくれた君へ", cat: "完" },
 ];
 
 const TOTAL = META.length;
-const SAVE = "readmore.v3";
+const SAVE = "readmore.v4"; // ステージ構成変更のためセーブキーを更新
 
 /* ================= 実績カタログ（多くは条件付き・取り逃し可） ================= */
 
@@ -428,10 +427,8 @@ function StageBody({
     case 13:
       return <S13FakeEnd active={active} api={api} />;
     case 14:
-      return <S14Kona active={active} api={api} />;
-    case 15:
       return <S15Type active={active} api={api} />;
-    case 16:
+    case 15:
       return <S16Shibaku active={active} api={api} />;
     default:
       return <S17Ending reads={reads} ach={ach} startedAt={startedAt} reset={reset} />;
@@ -449,10 +446,6 @@ function S0({ active, api }: SP) {
         最近フラグムービーに憧れるようになってきた。いいアイディアを動画に取り込んだり、遊びのある字幕などを作るのには、AfterEffectを使うことを初めて知った。
       </p>
       <p className="mt-2 font-bold">正直自分の中で革命が起こったようだった・・・</p>
-      <Roast>
-        正式名称は「After Effects」。革命を起こす相手の名前くらい正確に覚えろ。
-        なお続報（2026年）：革命はまだ起こっていません。
-      </Roast>
       <p className="mt-3 font-bold">続きは、続きを読むからどうぞ！</p>
       {active && (
         <button onClick={api.advance} className={BTN}>
@@ -469,7 +462,6 @@ function S1({ active, api }: SP) {
     <>
       <p>どうも、さかやんです＞ｗ＜　昨日の続き、書きます。</p>
       <p className="mt-2 font-bold">続きは、続きを読むからどうぞ！</p>
-      <Roast>続きを書くと宣言した直後に続きを読ませるな。永久機関か。</Roast>
       {active && (
         <button onClick={api.advance} className={BTN}>
           続きを読む →
@@ -486,7 +478,6 @@ function S2({ active, api }: SP) {
       <p>え？</p>
       <p className="mt-2">いや、その、だから——</p>
       <p className="mt-2 font-bold">続きは、続きを読むからどうぞ！</p>
-      <Roast>本人も何が続きなのか分からなくなっている。読者はもっと分かっていない。</Roast>
       {active && (
         <button onClick={api.advance} className={BTN}>
           ほんとうに続きを読む →
@@ -517,8 +508,7 @@ function S3Karaoke({ active, api }: SP) {
   if (!active) {
     return (
       <>
-        <Note>4gottenのメンツ全員リアフレでカラオケ→サイゼ。詳細は上記の通り供養済み。</Note>
-        <Roast>持ち曲が「ハッチポッチステーション」の男とクランを組んでいる自覚を持て。</Roast>
+        <Note>4gottenのメンツ全員リアフレでカラオケ→サイゼ。楽しい一日でした。</Note>
       </>
     );
   }
@@ -545,10 +535,6 @@ function S3Karaoke({ active, api }: SP) {
           );
         })}
       </div>
-
-      {revealed.includes(4) && (
-        <Roast>「・・・///」で誤魔化すな。何を歌った。ここだけ15年経っても非公開なの、逆に気になるんだが。</Roast>
-      )}
 
       {revealed.length >= 1 && (
         <>
@@ -579,7 +565,6 @@ function S4Face({ active, api }: SP) {
     return (
       <>
         <p className="py-3 text-center text-4xl font-black">＞ｗ＜</p>
-        <Roast>本文が顔文字1個。この顔文字、当時の彼は句読点の代わりに使っていました。</Roast>
       </>
     );
   }
@@ -603,7 +588,6 @@ function S4Face({ active, api }: SP) {
         </p>
       )}
       {grown && <p className="anim-pop text-center text-sm font-bold text-brand">進化した。（なにに？）</p>}
-      <Roast>本文が顔文字1個。それに対して読者ができることが「撫でる」しかないの、双方どうかしている。</Roast>
       <button onClick={api.advance} className={BTN}>
         続きを読む →
       </button>
@@ -649,7 +633,6 @@ function S5Loading({ active, api }: SP) {
     return (
       <>
         <Note>（読み込みは失敗しました。最初から何も無かったので。）</Note>
-        <Roast>98%で止まるのは、基本情報の自己採点と同じ。</Roast>
       </>
     );
   }
@@ -684,7 +667,6 @@ function S5Loading({ active, api }: SP) {
     <>
       <p className="font-bold text-danger">読み込みに失敗しました＞ｗ＜（うそ）</p>
       <p className="mt-2 text-muted-foreground">最初からそんなものは無い。</p>
-      <Roast>「年内にお届けします」→ 大晦日23:59に読み込み失敗。仕事納めまで彼らしい。</Roast>
       <button onClick={api.advance} className={BTN}>
         もう一回押して！ →
       </button>
@@ -725,7 +707,6 @@ function S6Dodger({ active, api }: SP) {
     return (
       <>
         <Note>※ ボタンは観念しました。</Note>
-        <Roast>ボタンにすら逃げられる男。</Roast>
       </>
     );
   }
@@ -756,7 +737,7 @@ function S6Dodger({ active, api }: SP) {
       <p className="mt-2 text-xs text-muted-foreground">
         {!gaveUp && dodges === 0 && "（どうぞ！）"}
         {!gaveUp && dodges === 1 && "あｗ　ごめんｗ"}
-        {!gaveUp && dodges === 2 && "めすみるく「いじわるすんなｗ」"}
+        {!gaveUp && dodges === 2 && "（ボタンにも意地がある）"}
         {gaveUp && (lonely && dodges < 3 ? "待ちの勝利。" : "……追い詰められた。")}
       </p>
     </>
@@ -795,7 +776,6 @@ function S7Title({ active, api }: SP) {
     return (
       <>
         <Note>（タイトルは元に戻しました。ご迷惑をおかけしました。）</Note>
-        <Roast>「新しい表現に挑戦」の結果がタブ汚染。表現の敗北。</Roast>
       </>
     );
   }
@@ -940,7 +920,7 @@ function S9Scroll({ active, api }: SP) {
   if (!active) {
     return (
       <>
-        <Note>（2,200pxの空白は撤去されました。彼の更新履歴の実物大レプリカでした。）</Note>
+        <Note>（2,200pxの空白は撤去されました。）</Note>
       </>
     );
   }
@@ -967,7 +947,7 @@ function S9Scroll({ active, api }: SP) {
             <span className="anim-pop text-sm font-bold text-gold">＞ω＜（埋蔵物）</span>
           )}
         </div>
-        <Marker top="70%" text="この空白、彼の更新頻度と同じ密度です" />
+        <Marker top="70%" text="まだまだ下だよ" />
         <Marker top="88%" text="あとちょっと！" />
         <div className="absolute inset-x-4 bottom-4">
           <p className="mb-2 text-center text-sm font-bold">ようこそ、最下層へ。</p>
@@ -1005,7 +985,6 @@ function S10Countdown({ active, api }: SP) {
     return (
       <>
         <Note>本当の続きまで：3 → 2 → 1 → ∞（諸説あり）</Note>
-        <Roast>GTX 780 Ti は買った。作った動画は0本。GPUは今日も平和です。</Roast>
       </>
     );
   }
@@ -1067,7 +1046,7 @@ function S11Multiplied({ active, api }: SP) {
   if (!active) {
     return (
       <>
-        <Note>本物は最初から1つだけでした。（当たり前だろ）</Note>
+        <Note>本物は最初から1つだけでした。</Note>
       </>
     );
   }
@@ -1075,7 +1054,7 @@ function S11Multiplied({ active, api }: SP) {
   return (
     <>
       <p>日頃の感謝を込めて、続きを読むボタンを増量しました！（サービス）</p>
-      <p className="mt-1 text-xs text-muted-foreground">めすみるく「本物には『！』が付いてる気がする」</p>
+      <p className="mt-1 text-xs text-muted-foreground">※ 本物には「！」が付いてる、気がする</p>
       <div className="mt-4 grid grid-cols-3 gap-2">
         {Array.from({ length: 12 }).map((_, i) => {
           const isReal = i === REAL;
@@ -1112,7 +1091,6 @@ function S12Retro({ active, api }: SP) {
     return (
       <>
         <Note>（あの頃のデザインは、返却されました。）</Note>
-        <Roast>「Sorry, Japanese only.」——安心しろ、日本人も読んでいない。</Roast>
       </>
     );
   }
@@ -1167,11 +1145,9 @@ const CREDITS_TOP = [
   "制作　SakayaN",
   "脚本　さかやん",
   "主演　4g.MiNaMi",
-  "友情出演　みるくふぁいたー",
   "スナイパー　瞳を知り尽した男",
   "（※ここまで全部同一人物）",
   "",
-  "特別出演　めすみるく",
   "協力　4gotten / Joka先生 / AfterEffect",
   "",
 ];
@@ -1189,7 +1165,6 @@ function S13FakeEnd({ active, api }: SP) {
     return (
       <>
         <Note>完（未遂）</Note>
-        <Roast>主演・脚本・制作・スナイパーが同一人物。文化祭の一人芝居でももう少し配役がある。</Roast>
       </>
     );
   }
@@ -1226,48 +1201,6 @@ function S13FakeEnd({ active, api }: SP) {
   );
 }
 
-/* --- 14: めすみるく、12年ぶりのコメント --- */
-const KONA_COMMENTS = [
-  "まだやってるのｗ？",
-  "『ブログは３日に一回は更新してこ！』って言ったの、12年前なんだけど。",
-  "……でも、ちょっとうれしい。また今度一緒になんかやろやー。",
-];
-
-function S14Kona({ active, api }: SP) {
-  const [shown, setShown] = useState(0);
-
-  useEffect(() => {
-    if (!active || shown >= KONA_COMMENTS.length) return;
-    const t = setTimeout(() => setShown((s) => s + 1), 850);
-    return () => clearTimeout(t);
-  }, [active, shown]);
-
-  const list = active ? KONA_COMMENTS.slice(0, shown) : KONA_COMMENTS;
-
-  return (
-    <>
-      <p className="text-xs text-muted-foreground">コメント一覧 ({KONA_COMMENTS.length})</p>
-      <div className="mt-2 space-y-2">
-        {list.map((c, i) => (
-          <div key={i} className={`${active ? "anim-fadeup" : ""} rounded-md border border-line bg-black/20 p-3`}>
-            <div className="text-xs font-bold text-[#cf8fb0]">
-              {i + 1}. めすみるく{" "}
-              <span className="font-normal text-muted-foreground">(2023年11月11日 11:1{i})</span>
-            </div>
-            <p className="mt-1 text-sm">{c}</p>
-          </div>
-        ))}
-      </div>
-      {active && shown >= KONA_COMMENTS.length && (
-        <button onClick={api.advance} className={`${BTN} anim-pop`}>
-          「うん」と返事して続きを読む →
-        </button>
-      )}
-      {!active && <Roast>12年放置したブログに、まだ見に来てくれる人がいる。読者ガチャSSRを引いた自覚を持て。</Roast>}
-    </>
-  );
-}
-
 /* --- 15: 誠意（入力）。隠しワードが2つ --- */
 function S15Type({ active, api }: SP) {
   const [value, setValue] = useState("");
@@ -1284,7 +1217,7 @@ function S15Type({ active, api }: SP) {
       setReply("Jokaさまぁあああああああああ……ｗ　最近何してるんだろうな、あの人。");
       api.grantA("joka");
       setPassed(true);
-    } else if (/こな|みるく/.test(v)) {
+    } else if (/こな/.test(v)) {
       setReply("……呼んだ？（照）");
       api.grantA("kona_call");
       setPassed(true);
@@ -1302,7 +1235,6 @@ function S15Type({ active, api }: SP) {
     return (
       <>
         <Note>誠意は受理されました。（判定はガバガバでした）</Note>
-        <Roast>誠意の判定がガバガバなの、彼の人生プランと同じ。</Roast>
       </>
     );
   }
@@ -1346,7 +1278,6 @@ function S16Shibaku({ active, api }: SP) {
     return (
       <>
         <Note>（本文なし）</Note>
-        <Roast>15年ぶりの生存報告が、恫喝。</Roast>
       </>
     );
   }
@@ -1363,7 +1294,6 @@ function S16Shibaku({ active, api }: SP) {
           <p className="anim-pop mt-4 rounded-md border border-dashed border-line bg-black/20 p-6 text-center text-muted-foreground">
             （本文なし）
           </p>
-          <Roast>15年ぶりの生存報告が、恫喝。しかも本文なし。逆にどうやって投稿したんだ。</Roast>
           <button
             onClick={() => {
               api.grantA("alive");
@@ -1403,7 +1333,6 @@ function S17Ending({
   return (
     <>
       <div className="space-y-3">
-        <p>——散々バカにしてきたけど、最後だけ本当のことを書く。</p>
         <p>「続きは、続きを読むからどうぞ！」って、あの頃の俺は毎回書いてた。</p>
         <p>フラグムービーは、まだ作ってない。AfterEffectも、「革命だ」って言ったまま止まってる。</p>
         <p>基本情報も落ちたし、ブログも12年くらい書いてない。こなちゃんへの想いは、ダジャレになって散った。</p>
