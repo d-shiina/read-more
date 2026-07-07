@@ -26,6 +26,7 @@ const META: Meta[] = [
   { date: "2011年12月31日 23:59", title: "続きを読み込み中", cat: "お知らせ" },
   { date: "2012年03月05日 03:30", title: "続きはこのボタンから！", cat: "雑談" },
   { date: "2012年03月06日 18:36", title: "新しい表現に挑戦してみた", cat: "ブログネタ考察" },
+  { date: "2012年07月10日 21:00", title: "黒歴史Twitter発掘", cat: "掘り起こし" },
   { date: "2013年06月06日 06:06", title: "続きはこの下です", cat: "埋蔵" },
   { date: "2013年12月25日 00:00", title: "NewPCになったので続きも爆速です", cat: "お知らせ" },
   { date: "2014年04月01日 00:00", title: "続きを読むボタン増量キャンペーン", cat: "サービス" },
@@ -46,6 +47,7 @@ const ACH: string[] = [
   "🌀 読み込みに騙された",
   "🏃 ボタンに逃げられた",
   "📑 タブを汚された",
+  "🐦 黒歴史を発掘された",
   "🕳 底まで行った",
   "♾ ∞を見た",
   "🎯 本物を見抜いた",
@@ -289,20 +291,22 @@ function Stage(p: StageProps) {
     case 6:
       return <S6Title advance={p.advance} />;
     case 7:
-      return <S7Scroll advance={p.advance} />;
+      return <S7Twitter advance={p.advance} />;
     case 8:
-      return <S8Countdown advance={p.advance} />;
+      return <S7Scroll advance={p.advance} />;
     case 9:
-      return <S9Multiplied advance={p.advance} />;
+      return <S8Countdown advance={p.advance} />;
     case 10:
-      return <S10Retro advance={p.advance} />;
+      return <S9Multiplied advance={p.advance} />;
     case 11:
-      return <S11FakeEnd advance={p.advance} />;
+      return <S10Retro advance={p.advance} />;
     case 12:
-      return <S12Kona advance={p.advance} />;
+      return <S11FakeEnd advance={p.advance} />;
     case 13:
-      return <S13Type advance={p.advance} />;
+      return <S12Kona advance={p.advance} />;
     case 14:
+      return <S13Type advance={p.advance} />;
+    case 15:
       return <S14Shibaku advance={p.advance} />;
     default:
       return <S15Ending reset={p.reset} reads={p.reads} ach={p.ach} startedAt={p.startedAt} />;
@@ -500,7 +504,74 @@ function S6Title({ advance }: A) {
   );
 }
 
-/* --- 7: スクロール地獄 --- */
+/* --- 7: 黒歴史Twitter発掘（実在ツイート、当時の彼のこな推し） --- */
+const TWEETS_MAIN = [
+  { date: "2012.02.17", text: "こなちゃんおかえりー私はまだ学校にいるー＞ｗ＜後1時間くらいで家にいると思うー！今日は過疎るのかな？ｗ" },
+  { date: "2012.02.22", text: "こなちゃんTSこいやぁああああ⌒*( ◖◡◗✰)*ﾟ⌒" },
+  { date: "2012.03.11", text: "暇ーこなちゃんTSはよ！" },
+];
+const TWEETS_MORE = [
+  { date: "2012.02.26", text: "やっと睡魔が襲ってきた⌒*( ◖◡◗✰)*ﾟ⌒こなちゃんちゃんと起きれたのだろうか？" },
+  { date: "2012.03.12", text: "二度寝とか甘えー、こなちゃんマイクラの鯖立ててからいってくれたらうれしい！" },
+  { date: "2012.05.13", text: "いつの間にかこなちゃん帰ってきとるやん(゜∀。)" },
+  { date: "2012.06.27", text: "とりあえず8で作ることにした＞ｗ＜こなちゃんとか別の所で作ってるみたいやけど、みんな8おいで！" },
+  { date: "2012.07.10", text: "こなだけに、粉まみれってか！九州と味違ったりしたー？⌒*( ◖◡◗✰)*ﾟ⌒" },
+];
+
+function S7Twitter({ advance }: A) {
+  const [more, setMore] = useState(false);
+
+  return (
+    <>
+      <p>掘り起こしてしまった。当時の彼の、旧Twitter（現X）のログ。</p>
+      <p className="mt-1 text-xs text-muted-foreground">※ ここから先、しばらく「こなちゃん」しか言ってません。</p>
+
+      <div className="mt-4 space-y-2 rounded-md border border-line bg-black/20 p-3">
+        {TWEETS_MAIN.map((t, i) => (
+          <Tweet key={i} date={t.date} text={t.text} />
+        ))}
+        {more &&
+          TWEETS_MORE.map((t, i) => (
+            <Tweet key={`m${i}`} date={t.date} text={t.text} anim />
+          ))}
+      </div>
+
+      {!more ? (
+        <button onClick={() => setMore(true)} className={BTN_SUB}>
+          もっと見る（あと5件）
+        </button>
+      ) : (
+        <>
+          <p className="mt-3 text-center text-xs text-muted-foreground">
+            ……関連ツイート、まだまだ出てくる。編集済みでこれでも一部です。
+          </p>
+          <button onClick={advance} className={BTN}>
+            続きを読む →
+          </button>
+        </>
+      )}
+    </>
+  );
+}
+
+function Tweet({ date, text, anim }: { date: string; text: string; anim?: boolean }) {
+  return (
+    <div className={`flex gap-2 rounded-md bg-black/20 p-2.5 ${anim ? "anim-fadeup" : ""}`}>
+      <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-brand/20 text-xs font-black text-brand">
+        4g
+      </span>
+      <div className="min-w-0">
+        <div className="text-xs">
+          <span className="font-bold">4g.MiNaMi</span>{" "}
+          <span className="text-muted-foreground">@zaftx ・ {date}</span>
+        </div>
+        <p className="mt-0.5 text-sm leading-relaxed">{text}</p>
+      </div>
+    </div>
+  );
+}
+
+/* --- 8: スクロール地獄 --- */
 function S7Scroll({ advance }: A) {
   return (
     <>

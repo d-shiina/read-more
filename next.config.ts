@@ -1,10 +1,17 @@
 import type { NextConfig } from "next";
 
+// GitHub Pages 公開用: リポジトリ名がそのままパスになる
+// (https://<user>.github.io/kakumei-escape/) ため basePath が必要。
+const repoName = "kakumei-escape";
+const isProd = process.env.NODE_ENV === "production";
+
 const nextConfig: NextConfig = {
+  output: "export",
+  basePath: isProd ? `/${repoName}` : "",
+  assetPrefix: isProd ? `/${repoName}/` : "",
+  trailingSlash: true,
   images: {
-    // 自作の信頼できるSVGプレースホルダを next/image で扱うため
-    dangerouslyAllowSVG: true,
-    contentDispositionType: "inline",
+    unoptimized: true,
   },
 };
 
